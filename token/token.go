@@ -51,5 +51,5 @@ func CreateToken(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"data": signedToken})
+	ctx.JSON(http.StatusCreated, gin.H{"token": signedToken})
 }
