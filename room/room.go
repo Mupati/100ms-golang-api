@@ -84,7 +84,6 @@ func CreateRoom(ctx *gin.Context) {
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
-	defer res.Body.Close()
 
 	resp, err := io.ReadAll(res.Body)
 
@@ -92,6 +91,8 @@ func CreateRoom(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"data": string(resp)})
+	defer res.Body.Close()
+
+	ctx.Data(http.StatusOK, gin.MIMEJSON, resp)
 
 }
