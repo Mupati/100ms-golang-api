@@ -22,6 +22,7 @@ type RequestBody struct {
 
 var ContentTypeHeader = map[string]string{"Content-Type": "application/json"}
 
+// TODO: Move this outside of the room endpoints
 func generateManagementToken(durationInHours int) string {
 	appAccessKey := os.Getenv("APP_ACCESS_KEY")
 	appSecret := os.Getenv("APP_SECRET")
