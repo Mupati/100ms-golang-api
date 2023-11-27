@@ -3,11 +3,11 @@
 This is a Golang implementation of the 100ms Server v2 REST API
 
 General 
-- [*] Generating a management token
-- [*] Create a token for joining a room
+- [x] Generating a management token
+- [x] Create a token for joining a room
 
 [Rooms](https://www.100ms.live/docs/server-side/v2/api-reference/Rooms/overview)
-- [*] Create a new room
+- [x] Create a new room
 - [ ] Get details of a single room
 - [ ] Get details of a list of rooms in your account
 - [ ] Update the details of a room
