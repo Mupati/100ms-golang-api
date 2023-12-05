@@ -31,7 +31,13 @@ func main() {
 
 	router.Use(cors.Default())
 	router.POST("/token", token.CreateToken)
-	router.POST("/room", room.CreateRoom)
+
+	roomEndpoints := router.Group("/room")
+	{
+		roomEndpoints.POST("", room.CreateRoom)
+		roomEndpoints.GET("/:roomId", room.GetRoomDetails)
+	}
+
 	router.GET("/", testApi)
 
 	router.Run()

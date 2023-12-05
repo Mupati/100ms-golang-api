@@ -3,73 +3,46 @@ package room
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"strings"
+
 	"io"
 	"net/http"
-	"strings"
-	"time"
-
 	"os"
 
+	"api/helpers"
+
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
-	"github.com/google/uuid"
 )
 
 type RequestBody struct {
-	Room     *string `json:"room"`
-	Duration *int    `json:"duration,omitempty"`
+	Name *string `json:"name,omitempty"`
 }
 
 var ContentTypeHeader = map[string]string{"Content-Type": "application/json"}
 
-// TODO: Move this outside of the room endpoints
-func generateManagementToken(durationInHours int) string {
-	appAccessKey := os.Getenv("APP_ACCESS_KEY")
-	appSecret := os.Getenv("APP_SECRET")
-
-	mySigningKey := []byte(appSecret)
-	expiresIn := uint32(durationInHours * 3600)
-	now := uint32(time.Now().UTC().Unix())
-	exp := now + expiresIn
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"access_key": appAccessKey,
-		"type":       "management",
-		"version":    2,
-		"jti":        uuid.New().String(),
-		"iat":        now,
-		"exp":        exp,
-		"nbf":        now,
-	})
-
-	// Sign and get the complete encoded token as a string using the secret
-	signedToken, _ := token.SignedString(mySigningKey)
-	return signedToken
-}
-
-// Create a  call room with a given room name
+// Create a   room with a given room name
 func CreateRoom(ctx *gin.Context) {
 
-	var managementToken string
 	var rb RequestBody
+	managementToken := helpers.GenerateManagementToken()
 
 	if err := ctx.ShouldBind(&rb); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	if rb.Duration != nil {
-		managementToken = generateManagementToken(*rb.Duration)
-	} else {
-		managementToken = generateManagementToken(24)
-	}
-
 	postBody, _ := json.Marshal(map[string]interface{}{
-		"name":   strings.ToLower(*rb.Room),
+		"name":   strings.ToLower(*rb.Name),
 		"active": true,
 	})
-	payload := bytes.NewBuffer(postBody)
 
-	roomUrl := os.Getenv("ROOM_URL")
+	fmt.Println("rb.Name: ", *rb.Name)
+	payload := bytes.NewBuffer(postBody)
+	// helpers.MakeApiRequest(ctx, "room", "POST", payload)
+
+	baseUrl := os.Getenv("BASE_URL")
 	method := "POST"
+	roomUrl := baseUrl + "room"
 
 	client := &http.Client{}
 	req, err := http.NewRequest(method, roomUrl, payload)
@@ -96,4 +69,16 @@ func CreateRoom(ctx *gin.Context) {
 
 	ctx.Data(http.StatusOK, gin.MIMEJSON, resp)
 
+}
+
+// Get details of a given room
+func GetRoomDetails(ctx *gin.Context) {
+
+	roomId, ok := ctx.Params.Get("roomId")
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": "roomId is missing"})
+	}
+
+	endpointPath := "room/" + roomId
+	helpers.MakeApiRequest(ctx, endpointPath, "GET", nil)
 }
