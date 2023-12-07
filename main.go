@@ -10,9 +10,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func testApi(c *gin.Context) {
+func ping(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"message": "pong",
+		"message": "100ms API works...",
 	})
 
 }
@@ -27,18 +27,19 @@ func CORSMiddleware() gin.HandlerFunc {
 }
 
 func main() {
-	router := gin.Default()
 
+	router := gin.Default()
 	router.Use(cors.Default())
+
+	router.GET("/", ping)
 	router.POST("/token", token.CreateToken)
 
-	roomEndpoints := router.Group("/room")
+	roomEndpoints := router.Group("/rooms")
 	{
 		roomEndpoints.POST("", room.CreateRoom)
-		roomEndpoints.GET("/:roomId", room.GetRoomDetails)
+		roomEndpoints.GET("/:roomId", room.GetRoom)
 	}
 
-	router.GET("/", testApi)
-
 	router.Run()
+
 }

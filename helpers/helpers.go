@@ -2,7 +2,6 @@ package helpers
 
 import (
 	"bytes"
-	"fmt"
 	"time"
 
 	"io"
@@ -44,11 +43,6 @@ func MakeApiRequest(ctx *gin.Context, endpointPath, method string, payload *byte
 	baseUrl := os.Getenv("BASE_URL")
 	url := baseUrl + endpointPath
 
-	fmt.Println("url: ", url)
-	fmt.Println("managementToken: ", managementToken)
-	fmt.Println("method: ", method)
-	fmt.Println("payload: ", payload)
-
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, payload)
 	if err != nil {
@@ -64,11 +58,7 @@ func MakeApiRequest(ctx *gin.Context, endpointPath, method string, payload *byte
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
-	fmt.Println("res: ", res)
-
 	resp, err := io.ReadAll(res.Body)
-
-	fmt.Println("resp: ", resp)
 
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
