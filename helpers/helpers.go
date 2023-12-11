@@ -39,12 +39,21 @@ func GenerateManagementToken() string {
 // Helper method to make all api calls to 100ms
 func MakeApiRequest(ctx *gin.Context, endpointPath, method string, payload *bytes.Buffer) {
 
+	var requestBody io.Reader
+
 	managementToken := GenerateManagementToken()
 	baseUrl := os.Getenv("BASE_URL")
 	url := baseUrl + endpointPath
 
 	client := &http.Client{}
-	req, err := http.NewRequest(method, url, payload)
+
+	if payload == nil {
+		requestBody = nil
+	} else {
+		requestBody = payload
+	}
+
+	req, err := http.NewRequest(method, url, requestBody)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
@@ -66,6 +75,9 @@ func MakeApiRequest(ctx *gin.Context, endpointPath, method string, payload *byte
 
 	defer res.Body.Close()
 
+	// TODO
+	// Get the actual response to send the correct status code.
+	// Currently when there's an error, we still send 200, but the error code is in the payload.
 	ctx.Data(http.StatusOK, gin.MIMEJSON, resp)
 
 }
