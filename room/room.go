@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 
+	"time"
+
 	"net/http"
 
 	"api/helpers"
@@ -11,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type RequestBody struct {
+type HMSRequestBody struct {
 	Name               string          `json:"name,omitempty"`
 	Description        string          `json:"description,omitempty"`
 	TemplateId         string          `json:"template_id,omitempty"`
@@ -45,10 +47,18 @@ type UPLOAD_CREDENTIALS struct {
 	Secret string `json:"secret,omitempty"`
 }
 
-// Create a   room with a given room name
-func CreateRoom(ctx *gin.Context) {
+type HMSQueryParams struct {
+	Name    string    `form:"name,omitempty"`
+	Enabled bool      `form:"enabled,omitempty"`
+	Before  time.Time `form:"before,omitempty"`
+	After   time.Time `form:"after,omitempty"`
+}
 
-	var rb RequestBody
+const MISSING_ROOM_ID_ERROR_MESSAGE = "provide a room ID"
+
+// Get the post request body
+func getRequestBody(ctx *gin.Context) *bytes.Buffer {
+	var rb HMSRequestBody
 	var recordingInfo *RECORDING_INFO
 	var uploadInfo *UPLOAD_INFO
 	var uploadOptions *UPLOAD_OPTIONS
@@ -91,7 +101,7 @@ func CreateRoom(ctx *gin.Context) {
 		}
 	}
 
-	requestBody := RequestBody{
+	requestBody := HMSRequestBody{
 		Name:               rb.Name,
 		Description:        rb.Description,
 		TemplateId:         rb.TemplateId,
@@ -103,10 +113,9 @@ func CreateRoom(ctx *gin.Context) {
 	}
 
 	postBody, _ := json.Marshal(requestBody)
-
 	payload := bytes.NewBuffer(postBody)
-	helpers.MakeApiRequest(ctx, "rooms", "POST", payload)
 
+	return payload
 }
 
 // Get details of a given room
@@ -114,10 +123,61 @@ func GetRoom(ctx *gin.Context) {
 
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": "roomId is missing"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_ROOM_ID_ERROR_MESSAGE})
 	}
 
-	endpointPath := "rooms/" + roomId
-	helpers.MakeApiRequest(ctx, endpointPath, "GET", nil)
+	helpers.MakeApiRequest(ctx, "rooms/"+roomId, "GET", nil)
 
+}
+
+// Get a list of all rooms
+// TODO: pass name, enabled, after or before as query params
+
+func ListRooms(ctx *gin.Context) {
+	// Get query params
+	// enabled
+	// after and before
+	// name
+
+	helpers.MakeApiRequest(ctx, "rooms", "GET", nil)
+}
+
+// Create a   room with a given room name
+func CreateRoom(ctx *gin.Context) {
+	payload := getRequestBody(ctx)
+	helpers.MakeApiRequest(ctx, "rooms", "POST", payload)
+}
+
+// Update a Room
+func UpdateRoom(ctx *gin.Context) {
+	roomId, ok := ctx.Params.Get("roomId")
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_ROOM_ID_ERROR_MESSAGE})
+	}
+
+	payload := getRequestBody(ctx)
+	helpers.MakeApiRequest(ctx, "rooms/"+roomId, "POST", payload)
+}
+
+// Enable a room
+func EnableRoom(ctx *gin.Context) {
+	roomId, ok := ctx.Params.Get("roomId")
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_ROOM_ID_ERROR_MESSAGE})
+	}
+	postBody, _ := json.Marshal(map[string]bool{"enabled": true})
+	payload := bytes.NewBuffer(postBody)
+	helpers.MakeApiRequest(ctx, "rooms/"+roomId, "POST", payload)
+}
+
+// Disable a room
+func DisableRoom(ctx *gin.Context) {
+	roomId, ok := ctx.Params.Get("roomId")
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_ROOM_ID_ERROR_MESSAGE})
+	}
+	postBody, _ := json.Marshal(map[string]bool{"enabled": false})
+	payload := bytes.NewBuffer(postBody)
+	endpointPath := "rooms/" + roomId
+	helpers.MakeApiRequest(ctx, endpointPath, "POST", payload)
 }
