@@ -36,8 +36,13 @@ func main() {
 
 	roomEndpoints := router.Group("/rooms")
 	{
-		roomEndpoints.POST("", room.CreateRoom)
+
+		roomEndpoints.GET("", room.ListRooms)
 		roomEndpoints.GET("/:roomId", room.GetRoom)
+		roomEndpoints.POST("", room.CreateRoom)
+		roomEndpoints.POST("/:roomId", room.UpdateRoom)
+		roomEndpoints.POST("/:roomId/enable", room.EnableRoom)
+		roomEndpoints.POST("/:roomId/disable", room.DisableRoom)
 	}
 
 	router.Run()
