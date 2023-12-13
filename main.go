@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"api/room"
+	"api/room_codes"
 	"api/token"
 
 	"github.com/gin-contrib/cors"
@@ -43,6 +44,16 @@ func main() {
 		roomEndpoints.POST("/:roomId", room.UpdateRoom)
 		roomEndpoints.POST("/:roomId/enable", room.EnableRoom)
 		roomEndpoints.POST("/:roomId/disable", room.DisableRoom)
+	}
+
+	roomCodesEndpoints := router.Group("/room-codes")
+	{
+		roomCodesEndpoints.GET("/:roomId", room_codes.GetRoomCode)
+		roomCodesEndpoints.POST("/code/:code", room_codes.CreateShortCodeAuthToken)
+		roomCodesEndpoints.POST("/:roomId", room_codes.CreateRoomCode)
+		roomCodesEndpoints.POST("/:roomId/role/:role", room_codes.CreateRoomCodeForRole)
+		roomCodesEndpoints.POST("/update", room_codes.UpdateRoomCode)
+
 	}
 
 	router.Run()

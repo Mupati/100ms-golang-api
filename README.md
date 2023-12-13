@@ -21,10 +21,11 @@ General
 
 [Room Codes](https://www.100ms.live/docs/server-side/v2/api-reference/room-codes/room-code-overview)
 
-- [ ] Create a Room Code for every Role in the Room at once
-- [ ] Create a Room Code for a specific Role in a Room
-- [ ] Get Room Codes for all Roles in a Room
-- [ ] Update the current state for a given Room Code.
+- [x] Create a Room Code for every Role in the Room at once
+- [x] Create a Room Code for a specific Role in a Room
+- [x] Get Room Codes for all Roles in a Room
+- [x] Update the current state for a given Room Code.
+- [x] Create the auth token for a given short code
 
 [Active Rooms](https://www.100ms.live/docs/server-side/v2/api-reference/active-rooms/overview)
 
