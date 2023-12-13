@@ -104,7 +104,7 @@ func getRequestBody(ctx *gin.Context) *bytes.Buffer {
 		}
 	}
 
-	requestBody := HMSRequestBody{
+	postBody, _ := json.Marshal(HMSRequestBody{
 		Name:               rb.Name,
 		Description:        rb.Description,
 		TemplateId:         rb.TemplateId,
@@ -113,9 +113,7 @@ func getRequestBody(ctx *gin.Context) *bytes.Buffer {
 		LargeRoom:          rb.LargeRoom,
 		Size:               rb.Size,
 		MaxDurationSeconds: rb.MaxDurationSeconds,
-	}
-
-	postBody, _ := json.Marshal(requestBody)
+	})
 	payload := bytes.NewBuffer(postBody)
 
 	return payload
