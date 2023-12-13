@@ -3,6 +3,7 @@ package room
 import (
 	"bytes"
 	"encoding/json"
+	"os"
 
 	"time"
 
@@ -55,6 +56,8 @@ type HMSQueryParams struct {
 }
 
 const MISSING_ROOM_ID_ERROR_MESSAGE = "provide a room ID"
+
+var roomBaseUrl = os.Getenv("BASE_URL") + "rooms"
 
 // Get the post request body
 func getRequestBody(ctx *gin.Context) *bytes.Buffer {
@@ -126,7 +129,7 @@ func GetRoom(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_ROOM_ID_ERROR_MESSAGE})
 	}
 
-	helpers.MakeApiRequest(ctx, "rooms/"+roomId, "GET", nil)
+	helpers.MakeApiRequest(ctx, roomBaseUrl+"/"+roomId, "GET", nil)
 
 }
 
@@ -139,13 +142,13 @@ func ListRooms(ctx *gin.Context) {
 	// after and before
 	// name
 
-	helpers.MakeApiRequest(ctx, "rooms", "GET", nil)
+	helpers.MakeApiRequest(ctx, roomBaseUrl, "GET", nil)
 }
 
 // Create a   room with a given room name
 func CreateRoom(ctx *gin.Context) {
 	payload := getRequestBody(ctx)
-	helpers.MakeApiRequest(ctx, "rooms", "POST", payload)
+	helpers.MakeApiRequest(ctx, roomBaseUrl, "POST", payload)
 }
 
 // Update a Room
@@ -156,7 +159,7 @@ func UpdateRoom(ctx *gin.Context) {
 	}
 
 	payload := getRequestBody(ctx)
-	helpers.MakeApiRequest(ctx, "rooms/"+roomId, "POST", payload)
+	helpers.MakeApiRequest(ctx, roomBaseUrl+"/"+roomId, "POST", payload)
 }
 
 // Enable a room
@@ -167,7 +170,7 @@ func EnableRoom(ctx *gin.Context) {
 	}
 	postBody, _ := json.Marshal(map[string]bool{"enabled": true})
 	payload := bytes.NewBuffer(postBody)
-	helpers.MakeApiRequest(ctx, "rooms/"+roomId, "POST", payload)
+	helpers.MakeApiRequest(ctx, roomBaseUrl+"/"+roomId, "POST", payload)
 }
 
 // Disable a room
@@ -178,6 +181,5 @@ func DisableRoom(ctx *gin.Context) {
 	}
 	postBody, _ := json.Marshal(map[string]bool{"enabled": false})
 	payload := bytes.NewBuffer(postBody)
-	endpointPath := "rooms/" + roomId
-	helpers.MakeApiRequest(ctx, endpointPath, "POST", payload)
+	helpers.MakeApiRequest(ctx, roomBaseUrl+"/"+roomId, "POST", payload)
 }

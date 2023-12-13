@@ -37,13 +37,11 @@ func GenerateManagementToken() string {
 }
 
 // Helper method to make all api calls to 100ms
-func MakeApiRequest(ctx *gin.Context, endpointPath, method string, payload *bytes.Buffer) {
+func MakeApiRequest(ctx *gin.Context, url, method string, payload *bytes.Buffer) {
 
 	var requestBody io.Reader
 
 	managementToken := GenerateManagementToken()
-	baseUrl := os.Getenv("BASE_URL")
-	url := baseUrl + endpointPath
 
 	client := &http.Client{}
 
