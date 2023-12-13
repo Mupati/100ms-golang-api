@@ -29,13 +29,13 @@ General
 
 [Active Rooms](https://www.100ms.live/docs/server-side/v2/api-reference/active-rooms/overview)
 
-- [ ] Get details of a specific Active Room
-- [ ] Get details of a specific Peer in an active Room
-- [ ] Get details of the Active Peers in a Room
-- [ ] Update the details of a connected Peer
-- [ ] Send Message
-- [ ] Remove/Disconnect a connected Peer from an Active Room
-- [ ] End an Active Room
+- [x] Get details of a specific Active Room
+- [x] Get details of a specific Peer in an active Room
+- [x] List details of the Active Peers in a Room
+- [x] Update the details of a connected Peer
+- [x] Send Message
+- [x] Remove/Disconnect a connected Peer from an Active Room
+- [x] End an Active Room
 
 [Recordings](https://www.100ms.live/docs/server-side/v2/api-reference/recordings/overview)
 
