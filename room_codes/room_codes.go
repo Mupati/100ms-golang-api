@@ -11,12 +11,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const MISSING_ROOM_ID_ERROR_MESSAGE = "provide a room ID"
-
 type HMSRoomCodeUpdateRequestBody struct {
 	Code    string `json:"code"`
 	Enabled bool   `json:"enabled"`
 }
+
+const MISSING_ROOM_ID_ERROR_MESSAGE = "provide a room ID"
 
 var roomCodeBaseUrl = os.Getenv("BASE_URL") + "room-codes"
 var authBaseUrl = os.Getenv("AUTH_BASE_URL")

@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"api/active_room"
 	"api/room"
 	"api/room_codes"
 	"api/token"
@@ -54,6 +55,17 @@ func main() {
 		roomCodesEndpoints.POST("/:roomId/role/:role", room_codes.CreateRoomCodeForRole)
 		roomCodesEndpoints.POST("/update", room_codes.UpdateRoomCode)
 
+	}
+
+	activeRoomsEndpoints := router.Group("/active-rooms")
+	{
+		activeRoomsEndpoints.GET("/:roomId", active_room.GetActiveRoom)
+		activeRoomsEndpoints.GET("/:roomId/peers/:peerId", active_room.GetPeer)
+		activeRoomsEndpoints.GET("/:roomId/peers", active_room.ListPeers)
+		activeRoomsEndpoints.POST("/:roomId/peers/:peerId", active_room.UpdatePeer)
+		activeRoomsEndpoints.POST("/:roomId/send-message", active_room.SendMessage)
+		activeRoomsEndpoints.POST("/:roomId/remove-peers", active_room.RemovePeer)
+		activeRoomsEndpoints.POST("/:roomId/end-room", active_room.EndRoom)
 	}
 
 	router.Run()
