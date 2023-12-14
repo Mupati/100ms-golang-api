@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"os"
-
-	"time"
+	"strconv"
 
 	"net/http"
+	"net/url"
 
 	"api/helpers"
 
@@ -48,11 +48,11 @@ type UPLOAD_CREDENTIALS struct {
 	Secret string `json:"secret,omitempty"`
 }
 
-type HMSRoomQueryParams struct {
-	Name    string    `form:"name,omitempty"`
-	Enabled bool      `form:"enabled,omitempty"`
-	Before  time.Time `form:"before,omitempty"`
-	After   time.Time `form:"after,omitempty"`
+type HMSRoomQueryParam struct {
+	Name    string `form:"name,omitempty"`
+	Enabled *bool  `form:"enabled,omitempty"`
+	Before  string `form:"before,omitempty"`
+	After   string `form:"after,omitempty"`
 }
 
 const MISSING_ROOM_ID_ERROR_MESSAGE = "provide a room ID"
@@ -132,15 +132,17 @@ func GetRoom(ctx *gin.Context) {
 }
 
 // Get a list of all rooms
-// TODO: pass name, enabled, after or before as query params
-
+// Applicable filters: name string, enabled *bool, after string, before string
 func ListRooms(ctx *gin.Context) {
-	// Get query params
-	// enabled
-	// after and before
-	// name
-
-	helpers.MakeApiRequest(ctx, roomBaseUrl, "GET", nil)
+	var param HMSRoomQueryParam
+	qs := url.Values{}
+	if ctx.BindQuery(&param) == nil {
+		qs.Add("name", param.Name)
+		qs.Add("enabled", strconv.FormatBool(*param.Enabled))
+		qs.Add("before", param.Before)
+		qs.Add("after", param.After)
+	}
+	helpers.MakeApiRequest(ctx, roomBaseUrl+"?"+qs.Encode(), "GET", nil)
 }
 
 // Create a   room with a given room name
