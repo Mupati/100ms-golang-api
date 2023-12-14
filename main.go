@@ -5,6 +5,7 @@ import (
 
 	"api/active_room"
 	"api/recording"
+	"api/recording_assets"
 	"api/room"
 	"api/room_codes"
 	"api/sessions"
@@ -84,6 +85,13 @@ func main() {
 	{
 		sessionsEndpoints.GET("", sessions.ListSessions)
 		sessionsEndpoints.GET("/:sessionId", sessions.GetSession)
+	}
+
+	recordingAssetsEndpoint := router.Group("/recording-assets")
+	{
+		recordingAssetsEndpoint.GET("", recording_assets.ListRecordingAssets)
+		recordingAssetsEndpoint.GET("/:assetId", recording_assets.GetRecordingAsset)
+		recordingAssetsEndpoint.GET("/:assetId/url", recording_assets.GetPresignedUrl)
 	}
 
 	router.Run()

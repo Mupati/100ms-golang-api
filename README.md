@@ -72,9 +72,9 @@ General
 
 [Recording Assets](https://www.100ms.live/docs/server-side/v2/api-reference/recording-assets/overview)
 
-- [ ] Get details of a Recording Asset
-- [ ] Generate a short-lived pre-signed URL for a recording asset
-- [ ] Get details of all recording assets of a workspace
+- [x] Get details of a Recording Asset
+- [x] Generate a short-lived pre-signed URL for a recording asset
+- [x] Get details of all recording assets of a workspace
 
 [Policy](https://www.100ms.live/docs/server-side/v2/api-reference/policy/template-object)
 
