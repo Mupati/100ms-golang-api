@@ -7,6 +7,7 @@ import (
 	"api/recording"
 	"api/room"
 	"api/room_codes"
+	"api/sessions"
 	"api/token"
 
 	"github.com/gin-contrib/cors"
@@ -77,6 +78,12 @@ func main() {
 		recordingsEndpoints.GET("", recording.ListRecordings)
 		recordingsEndpoints.GET("/:recordingId", recording.GetRecording)
 		recordingsEndpoints.GET("/:recordingId/config", recording.GetRecordingConfig)
+	}
+
+	sessionsEndpoints := router.Group("/sessions")
+	{
+		sessionsEndpoints.GET("", sessions.ListSessions)
+		sessionsEndpoints.GET("/:sessionId", sessions.GetSession)
 	}
 
 	router.Run()
