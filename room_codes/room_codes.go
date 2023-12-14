@@ -58,12 +58,11 @@ func UpdateRoomCode(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&rb); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
-	requestBody := HMSRoomCodeUpdateRequestBody{
+
+	postBody, _ := json.Marshal(HMSRoomCodeUpdateRequestBody{
 		Code:    rb.Code,
 		Enabled: rb.Enabled,
-	}
-
-	postBody, _ := json.Marshal(requestBody)
+	})
 	payload := bytes.NewBuffer(postBody)
 	helpers.MakeApiRequest(ctx, roomCodeBaseUrl+"/code", "POST", payload)
 }

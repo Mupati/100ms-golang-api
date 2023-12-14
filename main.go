@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"api/active_room"
+	"api/recording"
 	"api/room"
 	"api/room_codes"
 	"api/token"
@@ -66,6 +67,16 @@ func main() {
 		activeRoomsEndpoints.POST("/:roomId/send-message", active_room.SendMessage)
 		activeRoomsEndpoints.POST("/:roomId/remove-peers", active_room.RemovePeer)
 		activeRoomsEndpoints.POST("/:roomId/end-room", active_room.EndRoom)
+	}
+
+	recordingsEndpoints := router.Group("/recordings")
+	{
+		recordingsEndpoints.POST("/room/:roomId/start", recording.StartRecording)
+		recordingsEndpoints.POST("/room/:roomId/stop", recording.StopRecordings)
+		recordingsEndpoints.POST("/:recordingId/stop", recording.StopRecording)
+		recordingsEndpoints.GET("", recording.ListRecordings)
+		recordingsEndpoints.GET("/:recordingId", recording.GetRecording)
+		recordingsEndpoints.GET("/:recordingId/config", recording.GetRecordingConfig)
 	}
 
 	router.Run()

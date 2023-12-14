@@ -39,11 +39,12 @@ General
 
 [Recordings](https://www.100ms.live/docs/server-side/v2/api-reference/recordings/overview)
 
-- [ ] Start a recording for a room
-- [ ] Stop all recordings running a room
-- [ ] Get details of a recording
-- [ ] Get recording jobs of a workspace
-- [ ] Stop a recording using its unique identifier
+- [x] Start a recording for a room
+- [x] Stop all recordings running a room
+- [x] Get details of a recording
+- [x] Get recording jobs of a workspace
+- [x] Stop a recording using its unique identifier
+- [x] Get the configuration of a recording
 
 [External Streams](https://www.100ms.live/docs/server-side/v2/api-reference/external-streams/overview)
 
