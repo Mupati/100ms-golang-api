@@ -48,7 +48,7 @@ type UPLOAD_CREDENTIALS struct {
 	Secret string `json:"secret,omitempty"`
 }
 
-type HMSQueryParams struct {
+type HMSRoomQueryParams struct {
 	Name    string    `form:"name,omitempty"`
 	Enabled bool      `form:"enabled,omitempty"`
 	Before  time.Time `form:"before,omitempty"`

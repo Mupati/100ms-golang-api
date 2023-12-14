@@ -46,6 +46,11 @@ General
 - [x] Stop a recording using its unique identifier
 - [x] Get the configuration of a recording
 
+[Sessions](https://www.100ms.live/docs/server-side/v2/api-reference/Sessions/object)
+
+- [x] Get details of a specific session
+- [x] Get details of all sessions in an account
+
 [External Streams](https://www.100ms.live/docs/server-side/v2/api-reference/external-streams/overview)
 
 - [ ] Start an external stream for a room
@@ -70,11 +75,6 @@ General
 - [ ] Get details of a Recording Asset
 - [ ] Generate a short-lived pre-signed URL for a recording asset
 - [ ] Get details of all recording assets of a workspace
-
-[Sessions](https://www.100ms.live/docs/server-side/v2/api-reference/Sessions/object)
-
-- [ ] Get details of a specific session
-- [ ] Get details of all sessions in an account
 
 [Policy](https://www.100ms.live/docs/server-side/v2/api-reference/policy/template-object)
 
