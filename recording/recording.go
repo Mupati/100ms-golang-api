@@ -111,7 +111,7 @@ func StopRecordings(ctx *gin.Context) {
 
 // Stop a recording given the recording ID
 func StopRecording(ctx *gin.Context) {
-	recordingId, ok := ctx.Params.Get("objectId")
+	recordingId, ok := ctx.Params.Get("recordingId")
 	if !ok {
 		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": "provide the recording ID"})
 	}
