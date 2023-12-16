@@ -53,11 +53,26 @@ General
 
 [External Streams](https://www.100ms.live/docs/server-side/v2/api-reference/external-streams/overview)
 
-- [ ] Start an external stream for a room
-- [ ] Stop all external streams running in the room
-- [ ] Get the details of an external stream
-- [ ] Get details of all external streams of a workspace
-- [ ] Stop an external stream using its unique identifier
+- [x] Start an external stream for a room
+- [x] Stop all external streams running in the room
+- [x] Get the details of an external stream
+- [x] Get details of all external streams of a workspace
+- [x] Stop an external stream using its unique identifier
+
+[Polls](https://www.100ms.live/docs/server-side/v2/api-reference/polls/overview)
+- [ ] Create a  Poll
+- [ ] Get a Poll
+- [ ] Update Polls
+- [ ] Update Poll Question
+- [ ] Delete Poll Question
+- [ ] Update Poll Option
+- [ ] Delete Poll Option
+- [ ] Get Poll Sessions
+- [ ] Get Poll Results
+- [ ] Get Poll Result
+- [ ] Get Poll Responses
+- [ ] Get Poll Response
+- [ ] Link room with polls
 
 [Live Streams](https://www.100ms.live/docs/server-side/v2/api-reference/live-streams/overview)
 

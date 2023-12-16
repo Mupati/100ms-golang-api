@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"api/active_room"
+	"api/external_streams"
 	"api/recording"
 	"api/recording_assets"
 	"api/room"
@@ -87,11 +88,20 @@ func main() {
 		sessionsEndpoints.GET("/:sessionId", sessions.GetSession)
 	}
 
-	recordingAssetsEndpoint := router.Group("/recording-assets")
+	recordingAssetsEndpoints := router.Group("/recording-assets")
 	{
-		recordingAssetsEndpoint.GET("", recording_assets.ListRecordingAssets)
-		recordingAssetsEndpoint.GET("/:assetId", recording_assets.GetRecordingAsset)
-		recordingAssetsEndpoint.GET("/:assetId/url", recording_assets.GetPresignedUrl)
+		recordingAssetsEndpoints.GET("", recording_assets.ListRecordingAssets)
+		recordingAssetsEndpoints.GET("/:assetId", recording_assets.GetRecordingAsset)
+		recordingAssetsEndpoints.GET("/:assetId/url", recording_assets.GetPresignedUrl)
+	}
+
+	externalStreamsEndpoints := router.Group("/external-streams")
+	{
+		externalStreamsEndpoints.POST("/room/:roomId/start", external_streams.StartExternalStream)
+		externalStreamsEndpoints.POST("/room/:roomId/stop", external_streams.StopExternalStreams)
+		externalStreamsEndpoints.POST("/:streamId/stop", external_streams.StopExternalStream)
+		externalStreamsEndpoints.GET("", external_streams.ListExternalStreams)
+		externalStreamsEndpoints.GET("/:streamId", external_streams.GetExternalStream)
 	}
 
 	router.Run()
