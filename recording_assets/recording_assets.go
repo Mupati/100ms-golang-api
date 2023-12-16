@@ -13,8 +13,8 @@ import (
 var recordingAssetsBaseUrl = os.Getenv("BASE_URL") + "recording-assets"
 
 type HMSRecordingAssetsQueryParam struct {
-	RoomId    string `form:"room_id, omitempty"`
-	SessionId string `form:"session_id, omitempty"`
+	RoomId    string `form:"room_id,omitempty"`
+	SessionId string `form:"session_id,omitempty"`
 	Status    string `form:"status,omitempty"`
 	Start     string `form:"start,omitempty"`
 	Limit     int32  `form:"limit,omitempty"`
@@ -30,6 +30,7 @@ func GetRecordingAsset(ctx *gin.Context) {
 }
 
 // List all recording assets
+// Applicable filters: room_id string, session_id string, status string, start string, limit int32
 func ListRecordingAssets(ctx *gin.Context) {
 
 	var param HMSRecordingAssetsQueryParam

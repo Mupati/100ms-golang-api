@@ -13,7 +13,7 @@ import (
 var sessionsBaseUrl = os.Getenv("BASE_URL") + "sessions"
 
 type HMSSessionQueryParam struct {
-	RoomId string `form:"room_id, omitempty"`
+	RoomId string `form:"room_id,omitempty"`
 	Active *bool  `form:"active,omitempty"`
 	Before string `form:"before,omitempty"`
 	After  string `form:"after,omitempty"`
