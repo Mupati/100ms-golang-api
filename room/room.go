@@ -23,6 +23,7 @@ type HMSRequestBody struct {
 	LargeRoom          bool            `json:"large_room,omitempty"`
 	Size               int             `json:"size,omitempty"`
 	MaxDurationSeconds string          `json:"max_duration_seconds,omitempty"`
+	Polls              []string        `json:"polls,omitempty"`
 }
 
 type RECORDING_INFO struct {
@@ -113,6 +114,7 @@ func getRequestBody(ctx *gin.Context) *bytes.Buffer {
 		LargeRoom:          rb.LargeRoom,
 		Size:               rb.Size,
 		MaxDurationSeconds: rb.MaxDurationSeconds,
+		Polls:              rb.Polls,
 	})
 	payload := bytes.NewBuffer(postBody)
 
