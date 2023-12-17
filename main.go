@@ -5,6 +5,7 @@ import (
 
 	"api/active_room"
 	"api/external_streams"
+	"api/polls"
 	"api/recording"
 	"api/recording_assets"
 	"api/room"
@@ -102,6 +103,23 @@ func main() {
 		externalStreamsEndpoints.POST("/:streamId/stop", external_streams.StopExternalStream)
 		externalStreamsEndpoints.GET("", external_streams.ListExternalStreams)
 		externalStreamsEndpoints.GET("/:streamId", external_streams.GetExternalStream)
+	}
+
+	pollsEndpoints := router.Group("/polls")
+	{
+		pollsEndpoints.GET("/:pollId", polls.GetPoll)
+		pollsEndpoints.GET("/:pollId/sessions/:sessionId", polls.GetPollSessions)
+		pollsEndpoints.GET("/:pollId/sessions/:sessionId/results", polls.ListPollResults)
+		pollsEndpoints.GET("/:pollId/sessions/:sessionId/results/:resultId", polls.GetPollResult)
+		pollsEndpoints.GET("/:pollId/sessions/:sessionId/responses", polls.ListPollResponses)
+		pollsEndpoints.GET("/:pollId/sessions/:sessionId/responses/:responseId", polls.GetPollResponse)
+		pollsEndpoints.POST("", polls.CreatePoll)
+		pollsEndpoints.POST("/:pollId", polls.UpdatePoll)
+		pollsEndpoints.POST("/:pollId/questions/:questionId", polls.UpdatePollQuestion)
+		pollsEndpoints.POST("/:pollId/questions/:questionId/options/:optionId", polls.UpdatePollOption)
+		pollsEndpoints.DELETE("/:pollId/questions/:questionId/options/:optionId", polls.DeletePollOption)
+		pollsEndpoints.DELETE("/:pollId/questions/:questionId", polls.DeletePollQuestion)
+
 	}
 
 	router.Run()

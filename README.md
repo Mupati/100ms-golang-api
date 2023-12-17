@@ -60,19 +60,20 @@ General
 - [x] Stop an external stream using its unique identifier
 
 [Polls](https://www.100ms.live/docs/server-side/v2/api-reference/polls/overview)
-- [ ] Create a  Poll
-- [ ] Get a Poll
-- [ ] Update Polls
-- [ ] Update Poll Question
-- [ ] Delete Poll Question
-- [ ] Update Poll Option
-- [ ] Delete Poll Option
-- [ ] Get Poll Sessions
-- [ ] Get Poll Results
-- [ ] Get Poll Result
-- [ ] Get Poll Responses
-- [ ] Get Poll Response
-- [ ] Link room with polls
+
+- [x] Create a Poll
+- [x] Get a Poll
+- [x] Update Polls
+- [x] Update Poll Question
+- [x] Delete Poll Question
+- [x] Update Poll Option
+- [x] Delete Poll Option
+- [x] Get Poll Sessions
+- [x] Get Poll Results
+- [x] Get Poll Result
+- [x] Get Poll Responses
+- [x] Get Poll Response
+- [x] Link room with polls
 
 [Live Streams](https://www.100ms.live/docs/server-side/v2/api-reference/live-streams/overview)
 
