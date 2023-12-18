@@ -56,7 +56,7 @@ type HMSRoomQueryParam struct {
 	After   string `form:"after,omitempty"`
 }
 
-const MISSING_ROOM_ID_ERROR_MESSAGE = "provide a room ID"
+const missingRoomIdErrorMessage = "provide a room ID"
 
 var roomBaseUrl = os.Getenv("BASE_URL") + "rooms"
 
@@ -126,7 +126,7 @@ func GetRoom(ctx *gin.Context) {
 
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_ROOM_ID_ERROR_MESSAGE})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
 	}
 
 	helpers.MakeApiRequest(ctx, roomBaseUrl+"/"+roomId, "GET", nil)
@@ -159,7 +159,7 @@ func CreateRoom(ctx *gin.Context) {
 func UpdateRoom(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_ROOM_ID_ERROR_MESSAGE})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
 	}
 
 	payload := getRequestBody(ctx)
@@ -170,7 +170,7 @@ func UpdateRoom(ctx *gin.Context) {
 func EnableRoom(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_ROOM_ID_ERROR_MESSAGE})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
 	}
 	postBody, _ := json.Marshal(map[string]bool{"enabled": true})
 	payload := bytes.NewBuffer(postBody)
@@ -181,7 +181,7 @@ func EnableRoom(ctx *gin.Context) {
 func DisableRoom(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_ROOM_ID_ERROR_MESSAGE})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
 	}
 	postBody, _ := json.Marshal(map[string]bool{"enabled": false})
 	payload := bytes.NewBuffer(postBody)

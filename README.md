@@ -77,14 +77,14 @@ General
 
 [Live Streams](https://www.100ms.live/docs/server-side/v2/api-reference/live-streams/overview)
 
-- [ ] Start a livestream for room
-- [ ] Stop all livestreams in a room
-- [ ] Get details of a livestream
-- [ ] Get details of all livestreams of a workspace
-- [ ] Stop a specific live stream by its unique identifier
-- [ ] Send timed metadata for a running live stream
-- [ ] Pause recording of a running livestream
-- [ ] Resume a paused livestream recording
+- [x] Start a livestream for room
+- [x] Stop all livestreams in a room
+- [x] Get details of a livestream
+- [x] Get details of all livestreams of a workspace
+- [x] Stop a specific live stream by its unique identifier
+- [x] Send timed metadata for a running live stream
+- [x] Pause recording of a running livestream
+- [x] Resume a paused livestream recording
 
 [Recording Assets](https://www.100ms.live/docs/server-side/v2/api-reference/recording-assets/overview)
 
