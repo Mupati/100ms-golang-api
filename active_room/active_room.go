@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -34,6 +35,11 @@ type HMSEndRoomBody struct {
 	Reason string `json:"reason,omitempty"`
 }
 
+type HMSActiveRoomQueryParam struct {
+	UserId string `form:"user_id,omitempty"`
+	Role   string `form:"role,omitempty"`
+}
+
 var activeRoomBaseUrl = os.Getenv("BASE_URL") + "active-rooms"
 
 const MISSING_ROOM_ID_ERROR_MESSAGE = "provide a room ID"
@@ -59,13 +65,21 @@ func GetPeer(ctx *gin.Context) {
 }
 
 // List all peers details
-// TODO: add filters user_id and role
+// Filters: user_id and role
 func ListPeers(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
 		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_ROOM_ID_ERROR_MESSAGE})
 	}
-	helpers.MakeApiRequest(ctx, activeRoomBaseUrl+"/"+roomId+"/peers", "GET", nil)
+
+	var param HMSActiveRoomQueryParam
+	qs := url.Values{}
+	if ctx.BindQuery(&param) == nil {
+		qs.Add("user_id", param.UserId)
+		qs.Add("role", param.Role)
+	}
+
+	helpers.MakeApiRequest(ctx, activeRoomBaseUrl+"/"+roomId+"/peers"+"?"+qs.Encode(), "GET", nil)
 }
 
 // Update a single peer's details
