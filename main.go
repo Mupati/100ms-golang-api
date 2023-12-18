@@ -6,6 +6,7 @@ import (
 	"api/active_room"
 	"api/external_streams"
 	"api/live_streams"
+	"api/policy"
 	"api/polls"
 	"api/recording"
 	"api/recording_assets"
@@ -133,6 +134,13 @@ func main() {
 		liveStreamsEndpoints.POST("/:streamId/resume-recording", live_streams.ResumeLiveStreamRecording)
 		liveStreamsEndpoints.GET("", live_streams.ListLiveStreams)
 		liveStreamsEndpoints.GET("/:streamId", live_streams.GetLiveStream)
+	}
+
+	policyEndpoints := router.Group("/templates")
+	{
+
+		policyEndpoints.GET("", policy.ListTemplates)
+
 	}
 
 	router.Run()
