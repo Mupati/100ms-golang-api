@@ -5,7 +5,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"net/url"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -47,6 +49,13 @@ type HMSPoll struct {
 	Type      string          `json:"type,omitempty"`
 	Start     string          `json:"start,omitempty"`
 	Questions *[]PollQuestion `json:"questions,omitempty"`
+}
+
+type PollQueryParam struct {
+	Start    string `form:"start,omitempty"`
+	Limit    int32  `form:"limit,omitempty"`
+	All      *bool  `form:"all,omitempty"`
+	Question int32  `form:"question,omitempty"`
 }
 
 const MISSING_POLL_ID_ERROR_MESSAGE = "provide a poll ID"
@@ -94,7 +103,7 @@ func UpdatePoll(ctx *gin.Context) {
 		Mode:      rb.Mode,
 		Type:      rb.Type,
 		Start:     rb.Start,
-		Questions: rb.Questions, // TODO: look into this object and instances of nil
+		Questions: rb.Questions,
 	})
 	payload := bytes.NewBuffer(postBody)
 
@@ -121,8 +130,8 @@ func UpdatePollQuestion(ctx *gin.Context) {
 		Weight:       rb.Weight,
 		AnswerMinLen: rb.AnswerMinLen,
 		AnswerMaxLen: rb.AnswerMaxLen,
-		Answer:       rb.Answer,  // TODO: look into this object and instances of nil
-		Options:      rb.Options, // TODO: look into this object and instances of nil
+		Answer:       rb.Answer,
+		Options:      rb.Options,
 	})
 
 	payload := bytes.NewBuffer(postBody)
@@ -176,7 +185,16 @@ func GetPollSessions(ctx *gin.Context) {
 	if !ok || !ok1 {
 		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_POLL_ID_ERROR_MESSAGE + " and session ID"})
 	}
-	helpers.MakeApiRequest(ctx, pollBaseUrl+"/"+pollId+"/sessions/"+sessionId, "GET", nil)
+	var param PollQueryParam
+
+	qs := url.Values{}
+	if ctx.BindQuery(&param) == nil {
+		qs.Add("start", param.Start)
+		qs.Add("limit", strconv.Itoa(int(param.Limit)))
+
+	}
+
+	helpers.MakeApiRequest(ctx, pollBaseUrl+"/"+pollId+"/sessions/"+sessionId+"?"+qs.Encode(), "GET", nil)
 }
 
 // Get a poll result
@@ -197,7 +215,16 @@ func ListPollResults(ctx *gin.Context) {
 	if !ok || !ok1 {
 		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_POLL_ID_ERROR_MESSAGE + " and session ID"})
 	}
-	helpers.MakeApiRequest(ctx, pollBaseUrl+"/"+pollId+"/sessions/"+sessionId+"/results", "GET", nil)
+	var param PollQueryParam
+	qs := url.Values{}
+	if ctx.BindQuery(&param) == nil {
+		qs.Add("start", param.Start)
+		qs.Add("limit", strconv.Itoa(int(param.Limit)))
+		qs.Add("Question", strconv.Itoa(int(param.Question)))
+
+	}
+
+	helpers.MakeApiRequest(ctx, pollBaseUrl+"/"+pollId+"/sessions/"+sessionId+"/results"+"?"+qs.Encode(), "GET", nil)
 }
 
 // List  poll responses
@@ -207,7 +234,20 @@ func ListPollResponses(ctx *gin.Context) {
 	if !ok || !ok1 {
 		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_POLL_ID_ERROR_MESSAGE + " and session ID"})
 	}
-	helpers.MakeApiRequest(ctx, pollBaseUrl+"/"+pollId+"/sessions/"+sessionId+"/responses", "GET", nil)
+
+	var param PollQueryParam
+	qs := url.Values{}
+	if ctx.BindQuery(&param) == nil {
+		qs.Add("start", param.Start)
+		qs.Add("limit", strconv.Itoa(int(param.Limit)))
+		if param.All != nil {
+			qs.Add("all", strconv.FormatBool(*param.All))
+		}
+		qs.Add("Question", strconv.Itoa(int(param.Question)))
+
+	}
+
+	helpers.MakeApiRequest(ctx, pollBaseUrl+"/"+pollId+"/sessions/"+sessionId+"/responses"+"?"+qs.Encode(), "GET", nil)
 }
 
 // Get a poll response

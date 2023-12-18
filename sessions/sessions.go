@@ -37,7 +37,9 @@ func ListSessions(ctx *gin.Context) {
 	qs := url.Values{}
 	if ctx.BindQuery(&param) == nil {
 		qs.Add("room_id", param.RoomId)
-		qs.Add("active", strconv.FormatBool(*param.Active))
+		if param.Active != nil {
+			qs.Add("active", strconv.FormatBool(*param.Active))
+		}
 		qs.Add("before", param.Before)
 		qs.Add("after", param.After)
 	}

@@ -140,7 +140,9 @@ func ListRooms(ctx *gin.Context) {
 	qs := url.Values{}
 	if ctx.BindQuery(&param) == nil {
 		qs.Add("name", param.Name)
-		qs.Add("enabled", strconv.FormatBool(*param.Enabled))
+		if param.Enabled != nil {
+			qs.Add("enabled", strconv.FormatBool(*param.Enabled))
+		}
 		qs.Add("before", param.Before)
 		qs.Add("after", param.After)
 	}
