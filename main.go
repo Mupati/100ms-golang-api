@@ -5,6 +5,7 @@ import (
 
 	"api/active_room"
 	"api/external_streams"
+	"api/live_streams"
 	"api/polls"
 	"api/recording"
 	"api/recording_assets"
@@ -120,6 +121,18 @@ func main() {
 		pollsEndpoints.DELETE("/:pollId/questions/:questionId/options/:optionId", polls.DeletePollOption)
 		pollsEndpoints.DELETE("/:pollId/questions/:questionId", polls.DeletePollQuestion)
 
+	}
+
+	liveStreamsEndpoints := router.Group("/live-streams")
+	{
+		liveStreamsEndpoints.POST("/room/:roomId/start", live_streams.StartLiveStream)
+		liveStreamsEndpoints.POST("/room/:roomId/stop", live_streams.StopLiveStreams)
+		liveStreamsEndpoints.POST("/:streamId/stop", live_streams.StopLiveStream)
+		liveStreamsEndpoints.POST("/:streamId/metadata", live_streams.SendTimedMetada)
+		liveStreamsEndpoints.POST("/:streamId/pause-recording", live_streams.PauseLiveStreamRecording)
+		liveStreamsEndpoints.POST("/:streamId/resume-recording", live_streams.ResumeLiveStreamRecording)
+		liveStreamsEndpoints.GET("", live_streams.ListLiveStreams)
+		liveStreamsEndpoints.GET("/:streamId", live_streams.GetLiveStream)
 	}
 
 	router.Run()

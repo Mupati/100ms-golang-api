@@ -16,7 +16,7 @@ type HMSRoomCodeUpdateRequestBody struct {
 	Enabled bool   `json:"enabled"`
 }
 
-const MISSING_ROOM_ID_ERROR_MESSAGE = "provide a room ID"
+const missingRoomIdErrorMessage = "provide a room ID"
 
 var roomCodeBaseUrl = os.Getenv("BASE_URL") + "room-codes"
 var authBaseUrl = os.Getenv("AUTH_BASE_URL")
@@ -25,7 +25,7 @@ var authBaseUrl = os.Getenv("AUTH_BASE_URL")
 func GetRoomCode(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_ROOM_ID_ERROR_MESSAGE})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
 	}
 
 	helpers.MakeApiRequest(ctx, roomCodeBaseUrl+"/room/"+roomId, "GET", nil)
@@ -36,7 +36,7 @@ func CreateRoomCode(ctx *gin.Context) {
 
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_ROOM_ID_ERROR_MESSAGE})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
 	}
 
 	helpers.MakeApiRequest(ctx, roomCodeBaseUrl+"/room/"+roomId, "POST", nil)
@@ -47,7 +47,7 @@ func CreateRoomCodeForRole(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	role, ok1 := ctx.Params.Get("role")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_ROOM_ID_ERROR_MESSAGE + " and role"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage + " and role"})
 	}
 	helpers.MakeApiRequest(ctx, roomCodeBaseUrl+"/room/"+roomId+"/role/"+role, "POST", nil)
 }
