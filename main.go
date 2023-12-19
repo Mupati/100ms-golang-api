@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"api/active_room"
+	"api/analytics"
 	"api/external_streams"
 	"api/live_streams"
 	"api/policy"
@@ -13,6 +14,7 @@ import (
 	"api/room"
 	"api/room_codes"
 	"api/sessions"
+	"api/stream_key"
 	"api/token"
 
 	"github.com/gin-contrib/cors"
@@ -153,6 +155,16 @@ func main() {
 
 		policyEndpoints.DELETE("/:templateId/roles/:roleName", policy.DeleteTemplateRole)
 	}
+
+	streamKeyEndpoints := router.Group("/stream-keys")
+	{
+		streamKeyEndpoints.GET("/:roomId", stream_key.GetStreamKey)
+		streamKeyEndpoints.POST("/:roomId", stream_key.CreateStreamKey)
+		streamKeyEndpoints.POST("/:roomId/disable", stream_key.DisableStreamKey)
+	}
+
+	// Analytics Events
+	router.GET("/analytics", analytics.GetAnalyticsEvents)
 
 	router.Run()
 
