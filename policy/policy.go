@@ -3,6 +3,9 @@ package policy
 import (
 	"api/helpers"
 	"api/live_streams"
+	"bytes"
+	"encoding/json"
+	"net/http"
 	"net/url"
 	"os"
 	"strconv"
@@ -11,6 +14,8 @@ import (
 )
 
 var policyBaseUrl = os.Getenv("BASE_URL") + "templates"
+
+const missingTemplateIdErrorMessage = "provide the template ID"
 
 type HMSAudio struct {
 	Bitrate uint16 `json:"bitRate,omitempty"`
@@ -39,21 +44,23 @@ type HMSSimulcast struct {
 }
 
 type HMSPublishParams struct {
-	Allowed []string   `json:"allowed,omitempty"`
-	Audio   *HMSAudio  `json:"audio,omitempty"`
-	Video   *HMSVideo  `json:"video,omitempty"`
-	Screen  *HMSScreen `json:"screen,omitempty"`
+	Allowed               []string      `json:"allowed,omitempty"`
+	Audio                 *HMSAudio     `json:"audio,omitempty"`
+	Video                 *HMSVideo     `json:"video,omitempty"`
+	Screen                *HMSScreen    `json:"screen,omitempty"`
+	VideoSimulcastLayers  *HMSSimulcast `json:"videoSimulcastLayers,omitempty"`
+	ScreenSimulcastLayers *HMSSimulcast `json:"screenSimulcastLayers,omitempty"`
 }
 
 type HMSSubscribeDegradation struct {
-	MaxFramerate              uint8 `json:"packetLossThreshold,omitempty"`
+	PacketLossThreshold       uint8 `json:"packetLossThreshold,omitempty"`
 	DegradeGracePeriodSeconds uint8 `json:"degradeGracePeriodSeconds,omitempty"`
 	RecoverGracePeriodSeconds uint8 `json:"recoverGracePeriodSeconds,omitempty"`
 }
 
 type HMSSubscribeParams struct {
-	MaxBitrate           int                      `json:"maxSubsBitRate,omitempty"`
-	SubscribeToRoles     *[]HMSRole               `json:"subscribeToRoles,omitempty"`
+	MaxSubsBitRate       int                      `json:"maxSubsBitRate,omitempty"`
+	SubscribeToRoles     []string                 `json:"subscribeToRoles,omitempty"`
 	SubscribeDegradation *HMSSubscribeDegradation `json:"subscribeDegradation,omitempty"`
 }
 
@@ -66,9 +73,9 @@ type HMSPermissions struct {
 	SendRoomState    bool `json:"sendRoomState,omitempty"`
 	PollRead         bool `json:"pollRead,omitempty"`
 	PollWrite        bool `json:"pollWrite,omitempty"`
-	BrowserRecording bool `json:"browserRecording"`
-	RtmpStreaming    bool `json:"rtmpStreaming"`
-	HlsStreaming     bool `json:"hlsStreaming"`
+	BrowserRecording bool `json:"browserRecording,omitempty"`
+	RtmpStreaming    bool `json:"rtmpStreaming,omitempty"`
+	HlsStreaming     bool `json:"hlsStreaming,omitempty"`
 }
 
 type HMSRole struct {
@@ -103,15 +110,19 @@ type HMSRecording struct {
 }
 
 type HMSRoomState struct {
-	MessageInterval uint16 `json:"messageInterval,omitempty"`
-	SendPeerList    bool   `json:"sendPeerList,omitempty"`
-	Enabled         bool   `json:"enabled,omitempty"`
+	MessageInterval     uint16 `json:"messageInterval,omitempty"`
+	SendPeerList        bool   `json:"sendPeerList,omitempty"`
+	Enabled             bool   `json:"enabled,omitempty"`
+	StopRoomStateOnJoin bool   `json:"stopRoomStateOnJoin,omitempty"`
 }
 
 type HMSSetting struct {
-	Region    string        `json:"region,omitempty"`
-	Recording *HMSRecording `json:"recording,omitempty"`
-	RoomState *HMSRoomState `json:"roomState,omitempty"`
+	Region                string                   `json:"region,omitempty"`
+	Recording             *HMSRecording            `json:"recording,omitempty"`
+	RoomState             *HMSRoomState            `json:"roomState,omitempty"`
+	SubscribeDegradation  *HMSSubscribeDegradation `json:"subscribeDegradation,omitempty"`
+	VideoSimulcastLayers  *HMSSimulcast            `json:"videoSimulcastLayers,omitempty"`
+	ScreenSimulcastLayers *HMSSimulcast            `json:"screenSimulcastLayers,omitempty"`
 }
 
 type HMSBrowserRecordingsThumbnails struct {
@@ -168,8 +179,8 @@ type HMSHlsDestinations struct {
 	PlaylistType            string                `json:"playlistType,omitempty"`
 	MumPlaylistSegments     uint                  `json:"numPlaylistSegments,omitempty"`
 	VideoFrameRate          uint16                `json:"videoFrameRate,omitempty"`
-	EnableMetadataInsertion uint16                `json:"enableMetadataInsertion,omitempty"`
-	EnableStaticUrl         uint16                `json:"enableStaticUrl,omitempty"`
+	EnableMetadataInsertion bool                  `json:"enableMetadataInsertion,omitempty"`
+	EnableStaticUrl         bool                  `json:"enableStaticUrl,omitempty"`
 	Recording               *HLSRecording         `json:"recording,omitempty"`
 	AutoStopTimeout         uint                  `json:"autoStopTimeout,omitempty"`
 }
@@ -190,33 +201,175 @@ type HMSDestination struct {
 }
 
 type HMSTemplate struct {
-	Name         string      `json:"name,omitempty"`
-	Roles        *HMSRole    `json:"roles,omitempty"`
-	Settings     *HMSSetting `json:"settings,omitempty"`
-	Destinations *HMSRole    `json:"destinations,omitempty"`
+	Name         string              `json:"name,omitempty"`
+	Roles        map[string]*HMSRole `json:"roles,omitempty"`
+	Settings     *HMSSetting         `json:"settings,omitempty"`
+	Destinations *HMSDestination     `json:"destinations,omitempty"`
 }
 
 type HMSTemplateQueryParam struct {
+	Limit uint8  `form:"limit,omitempty"`
+	Start string `form:"start,omitempty"`
+}
+
+// Get the post request body
+func getTemplateRequestBody(ctx *gin.Context) *bytes.Buffer {
+	var rb HMSTemplate
+	if err := ctx.ShouldBindJSON(&rb); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	postBody, _ := json.Marshal(HMSTemplate{
+		Name:         rb.Name,
+		Roles:        rb.Roles,
+		Settings:     rb.Settings,
+		Destinations: rb.Destinations,
+	})
+	payload := bytes.NewBuffer(postBody)
+	return payload
 }
 
 // Create a template
 func CreateTemplate(ctx *gin.Context) {
+	payload := getTemplateRequestBody(ctx)
+	helpers.MakeApiRequest(ctx, policyBaseUrl, "POST", payload)
+}
 
-	helpers.MakeApiRequest(ctx, policyBaseUrl, "POST", nil)
+// Update a template using the template ID
+func UpdateTemplate(ctx *gin.Context) {
+	templateId, ok := ctx.Params.Get("templateId")
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage})
+	}
+
+	payload := getTemplateRequestBody(ctx)
+	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId, "POST", payload)
 }
 
 // Get a list of all rooms
-// Applicable filters: name string, enabled *bool, after string, before string
+// Applicable filters: start string, limit int
 func ListTemplates(ctx *gin.Context) {
 	var param HMSTemplateQueryParam
 	qs := url.Values{}
 	if ctx.BindQuery(&param) == nil {
-		qs.Add("name", param.Name)
-		if param.Enabled != nil {
-			qs.Add("enabled", strconv.FormatBool(*param.Enabled))
-		}
-		qs.Add("before", param.Before)
-		qs.Add("after", param.After)
+		qs.Add("start", param.Start)
+		qs.Add("limit", strconv.Itoa(int(param.Limit)))
 	}
 	helpers.MakeApiRequest(ctx, policyBaseUrl+"?"+qs.Encode(), "GET", nil)
+}
+
+// Get a template using the template ID
+func GetTemplate(ctx *gin.Context) {
+	templateId, ok := ctx.Params.Get("templateId")
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage})
+	}
+	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId, "GET", nil)
+}
+
+// Modify a role in a template
+func ModifyTemplateRole(ctx *gin.Context) {
+	templateId, ok := ctx.Params.Get("templateId")
+	roleName, ok1 := ctx.Params.Get("roleName")
+	if !ok || !ok1 {
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage + " and the role name"})
+	}
+
+	var rb HMSRole
+	if err := ctx.ShouldBindJSON(&rb); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	postBody, _ := json.Marshal(HMSRole{
+		Name:            rb.Name,
+		PublishParams:   rb.PublishParams,
+		SubscribeParams: rb.SubscribeParams,
+		Permissions:     rb.Permissions,
+		Priority:        rb.Priority,
+		MaxPeerCount:    rb.MaxPeerCount,
+	})
+	payload := bytes.NewBuffer(postBody)
+	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/roles/"+roleName, "POST", payload)
+}
+
+// Retrieve a specific role
+func GetTemplateRole(ctx *gin.Context) {
+	templateId, ok := ctx.Params.Get("templateId")
+	roleName, ok1 := ctx.Params.Get("roleName")
+	if !ok || !ok1 {
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage + " and the role name"})
+	}
+	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/roles/"+roleName, "GET", nil)
+}
+
+// Delete a specific role
+func DeleteTemplateRole(ctx *gin.Context) {
+	templateId, ok := ctx.Params.Get("templateId")
+	roleName, ok1 := ctx.Params.Get("roleName")
+	if !ok || !ok1 {
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage + " and the role name"})
+	}
+	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/roles/"+roleName, "DELETE", nil)
+}
+
+// Retrieve template settings
+func GetTemplateSettings(ctx *gin.Context) {
+	templateId, ok := ctx.Params.Get("templateId")
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage})
+	}
+	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/settings", "GET", nil)
+}
+
+// Update template settings
+func UpdateTemplateSettings(ctx *gin.Context) {
+	templateId, ok := ctx.Params.Get("templateId")
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage})
+	}
+
+	var rb HMSSetting
+	if err := ctx.ShouldBindJSON(&rb); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	postBody, _ := json.Marshal(HMSSetting{
+		Region:                rb.Region,
+		Recording:             rb.Recording,
+		RoomState:             rb.RoomState,
+		SubscribeDegradation:  rb.SubscribeDegradation,
+		VideoSimulcastLayers:  rb.VideoSimulcastLayers,
+		ScreenSimulcastLayers: rb.ScreenSimulcastLayers,
+	})
+	payload := bytes.NewBuffer(postBody)
+	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/settings", "POST", payload)
+}
+
+// Retrieve template destinations
+func GetTemplateDestinations(ctx *gin.Context) {
+	templateId, ok := ctx.Params.Get("templateId")
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage})
+	}
+	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/destinations", "GET", nil)
+}
+
+// Update template destinations
+func UpdateTemplateDestinations(ctx *gin.Context) {
+	templateId, ok := ctx.Params.Get("templateId")
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage})
+	}
+
+	var rb HMSDestination
+	if err := ctx.ShouldBindJSON(&rb); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	postBody, _ := json.Marshal(HMSDestination{
+		BrowserRecordings: rb.BrowserRecordings,
+		RtmpDestinations:  rb.RtmpDestinations,
+		HlsDestinations:   rb.HlsDestinations,
+		Transcriptions:    rb.Transcriptions,
+	})
+	payload := bytes.NewBuffer(postBody)
+	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/destinations", "POST", payload)
 }
