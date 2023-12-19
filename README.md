@@ -108,11 +108,10 @@ General
 
 [Analytics](https://www.100ms.live/docs/server-side/v2/api-reference/analytics/overview)
 
-- [ ] Track events of a participant in a room
-- [ ] Track recording events in a room
+- [x] Get analytics events
 
 [Stream Key](https://www.100ms.live/docs/server-side/v2/api-reference/stream-key/overview)
 
-- [ ] Create RTMP Stream Key and URL
-- [ ] Get the RTMP stream key and URL for a specific room
-- [ ] Disable the RTMP stream key for a specific room.
+- [x] Create RTMP Stream Key and URL
+- [x] Get the RTMP stream key and URL for a specific room
+- [x] Disable the RTMP stream key for a specific room.
