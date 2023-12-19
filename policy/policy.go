@@ -32,7 +32,7 @@ type HMSVideo struct {
 
 type HMSScreen = HMSVideo
 
-type HMSSimulcastLayers struct {
+type HMSSimulcastLayer struct {
 	MaxBitrate            uint    `json:"maxBitrate,omitempty"`
 	MaxFramerate          uint8   `json:"maxFramerate"`
 	ScaleResolutionDownBy float32 `json:"scaleResolutionDownBy"`
@@ -40,16 +40,15 @@ type HMSSimulcastLayers struct {
 }
 
 type HMSSimulcast struct {
-	Layers *HMSSimulcastLayers `json:"layers,omitempty"`
+	Layers *[]HMSSimulcastLayer `json:"layers,omitempty"`
 }
 
 type HMSPublishParams struct {
-	Allowed               []string      `json:"allowed,omitempty"`
-	Audio                 *HMSAudio     `json:"audio,omitempty"`
-	Video                 *HMSVideo     `json:"video,omitempty"`
-	Screen                *HMSScreen    `json:"screen,omitempty"`
-	VideoSimulcastLayers  *HMSSimulcast `json:"videoSimulcastLayers,omitempty"`
-	ScreenSimulcastLayers *HMSSimulcast `json:"screenSimulcastLayers,omitempty"`
+	Allowed   []string                 `json:"allowed,omitempty"`
+	Audio     *HMSAudio                `json:"audio,omitempty"`
+	Video     *HMSVideo                `json:"video,omitempty"`
+	Screen    *HMSScreen               `json:"screen,omitempty"`
+	Simulcast map[string]*HMSSimulcast `json:"simulcast,omitempty"`
 }
 
 type HMSSubscribeDegradation struct {
@@ -117,27 +116,21 @@ type HMSRoomState struct {
 }
 
 type HMSSetting struct {
-	Region                string                   `json:"region,omitempty"`
-	Recording             *HMSRecording            `json:"recording,omitempty"`
-	RoomState             *HMSRoomState            `json:"roomState,omitempty"`
-	SubscribeDegradation  *HMSSubscribeDegradation `json:"subscribeDegradation,omitempty"`
-	VideoSimulcastLayers  *HMSSimulcast            `json:"videoSimulcastLayers,omitempty"`
-	ScreenSimulcastLayers *HMSSimulcast            `json:"screenSimulcastLayers,omitempty"`
-}
-
-type HMSBrowserRecordingsThumbnails struct {
+	Region    string        `json:"region,omitempty"`
+	Recording *HMSRecording `json:"recording,omitempty"`
+	RoomState *HMSRoomState `json:"roomState,omitempty"`
 }
 
 type HMSBrowserRecordings struct {
-	Name            string                          `json:"name"`
-	Width           uint16                          `json:"width,omitempty"`
-	Height          uint16                          `json:"height,omitempty"`
-	MaxDuration     uint16                          `json:"maxDuration,omitempty"`
-	Thumbnails      *HMSBrowserRecordingsThumbnails `json:"thumbnails,omitempty"`
-	PresignDuration uint                            `json:"presignDuration,omitempty"`
-	Role            string                          `json:"role"`
-	AutoStart       bool                            `json:"autoStart,omitempty"`
-	AutoStopTimeout uint                            `json:"autoStopTimeout,omitempty"`
+	Name            string         `json:"name"`
+	Width           uint16         `json:"width,omitempty"`
+	Height          uint16         `json:"height,omitempty"`
+	MaxDuration     uint16         `json:"maxDuration,omitempty"`
+	Thumbnails      *HLSThumbnails `json:"thumbnails,omitempty"`
+	PresignDuration uint           `json:"presignDuration,omitempty"`
+	Role            string         `json:"role"`
+	AutoStart       bool           `json:"autoStart,omitempty"`
+	AutoStopTimeout uint           `json:"autoStopTimeout,omitempty"`
 }
 
 type HMSRtmpDestinations struct {
@@ -151,38 +144,40 @@ type HMSRtmpDestinations struct {
 }
 
 type HLSDestinationLayers struct {
-}
-
-type HLSRecordingLayers struct {
 	Width        int `json:"width,omitempty"`
 	Height       int `json:"height,omitempty"`
 	VideoBitrate int `json:"videoBitrate,omitempty"`
 	AudioBitrate int `json:"audioBitrate,omitempty"`
 }
 
-type HLSRecordingThumbnails struct {
+type HLSThumbnails struct {
+	Enabled bool  `json:"enabled,omitempty"`
+	Width   int   `json:"width,omitempty"`
+	Height  int   `json:"height,omitempty"`
+	Fps     int   `json:"fps,omitempty"`
+	Offsets []int `json:"offsets,omitempty"`
 }
 
 type HLSRecording struct {
 	HlsVod             bool                    `json:"hlsVod,omitempty"`
 	SingleFilePerLayer bool                    `json:"singleFilePerLayer,omitempty"`
 	EnableZipUpload    bool                    `json:"enableZipUpload,omitempty"`
-	Layers             *HLSRecordingLayers     `json:"layers,omitempty"`
-	Thumbnails         *HLSRecordingThumbnails `json:"thumbnails,omitempty"`
+	Layers             *[]HLSDestinationLayers `json:"layers,omitempty"`
+	Thumbnails         *HLSThumbnails          `json:"thumbnails,omitempty"`
 	PresignDuration    int                     `json:"presignDuration,omitempty"`
 }
 
 type HMSHlsDestinations struct {
-	Name                    string                `json:"name"`
-	MaxDuration             uint16                `json:"maxDuration,omitempty"`
-	Layers                  *HLSDestinationLayers `json:"layers,omitempty"`
-	PlaylistType            string                `json:"playlistType,omitempty"`
-	MumPlaylistSegments     uint                  `json:"numPlaylistSegments,omitempty"`
-	VideoFrameRate          uint16                `json:"videoFrameRate,omitempty"`
-	EnableMetadataInsertion bool                  `json:"enableMetadataInsertion,omitempty"`
-	EnableStaticUrl         bool                  `json:"enableStaticUrl,omitempty"`
-	Recording               *HLSRecording         `json:"recording,omitempty"`
-	AutoStopTimeout         uint                  `json:"autoStopTimeout,omitempty"`
+	Name                    string                  `json:"name"`
+	MaxDuration             uint16                  `json:"maxDuration,omitempty"`
+	Layers                  *[]HLSDestinationLayers `json:"layers,omitempty"`
+	PlaylistType            string                  `json:"playlistType,omitempty"`
+	NumPlaylistSegments     uint                    `json:"numPlaylistSegments,omitempty"`
+	VideoFrameRate          uint16                  `json:"videoFrameRate,omitempty"`
+	EnableMetadataInsertion bool                    `json:"enableMetadataInsertion,omitempty"`
+	EnableStaticUrl         bool                    `json:"enableStaticUrl,omitempty"`
+	Recording               *HLSRecording           `json:"recording,omitempty"`
+	AutoStopTimeout         uint                    `json:"autoStopTimeout,omitempty"`
 }
 type HMSTranscriptions struct {
 	Name             string                             `json:"name"`
@@ -194,10 +189,10 @@ type HMSTranscriptions struct {
 }
 
 type HMSDestination struct {
-	BrowserRecordings *HMSBrowserRecordings `json:"browserRecordings,omitempty"`
-	RtmpDestinations  *HMSRtmpDestinations  `json:"rtmpDestinations,omitempty"`
-	HlsDestinations   *HMSHlsDestinations   `json:"hlsDestinations,omitempty"`
-	Transcriptions    *HMSTranscriptions    `json:"transcriptions,omitempty"`
+	BrowserRecordings map[string]*HMSBrowserRecordings `json:"browserRecordings,omitempty"`
+	RtmpDestinations  map[string]*HMSRtmpDestinations  `json:"rtmpDestinations,omitempty"`
+	HlsDestinations   map[string]*HMSHlsDestinations   `json:"hlsDestinations,omitempty"`
+	Transcriptions    map[string]*HMSTranscriptions    `json:"transcriptions,omitempty"`
 }
 
 type HMSTemplate struct {
@@ -225,6 +220,7 @@ func getTemplateRequestBody(ctx *gin.Context) *bytes.Buffer {
 		Settings:     rb.Settings,
 		Destinations: rb.Destinations,
 	})
+
 	payload := bytes.NewBuffer(postBody)
 	return payload
 }
@@ -253,7 +249,9 @@ func ListTemplates(ctx *gin.Context) {
 	qs := url.Values{}
 	if ctx.BindQuery(&param) == nil {
 		qs.Add("start", param.Start)
-		qs.Add("limit", strconv.Itoa(int(param.Limit)))
+		if param.Limit >= 10 {
+			qs.Add("limit", strconv.Itoa(int(param.Limit)))
+		}
 	}
 	helpers.MakeApiRequest(ctx, policyBaseUrl+"?"+qs.Encode(), "GET", nil)
 }
@@ -288,6 +286,7 @@ func ModifyTemplateRole(ctx *gin.Context) {
 		Priority:        rb.Priority,
 		MaxPeerCount:    rb.MaxPeerCount,
 	})
+
 	payload := bytes.NewBuffer(postBody)
 	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/roles/"+roleName, "POST", payload)
 }
@@ -333,12 +332,9 @@ func UpdateTemplateSettings(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 	postBody, _ := json.Marshal(HMSSetting{
-		Region:                rb.Region,
-		Recording:             rb.Recording,
-		RoomState:             rb.RoomState,
-		SubscribeDegradation:  rb.SubscribeDegradation,
-		VideoSimulcastLayers:  rb.VideoSimulcastLayers,
-		ScreenSimulcastLayers: rb.ScreenSimulcastLayers,
+		Region:    rb.Region,
+		Recording: rb.Recording,
+		RoomState: rb.RoomState,
 	})
 	payload := bytes.NewBuffer(postBody)
 	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/settings", "POST", payload)
