@@ -94,17 +94,17 @@ General
 
 [Policy](https://www.100ms.live/docs/server-side/v2/api-reference/policy/template-object)
 
-- [ ] Create a template.
-- [ ] Get the details of a specific template
-- [ ] Get the details of all templates in an account
-- [ ] Update the details of a template
-- [ ] Create or Modify a Role in a template
-- [ ] Get details of a specific Role in a template
-- [ ] Delete a Role in a template
-- [ ] Get settings of a template
-- [ ] Update the settings of a template
-- [ ] Get the list of destinations in a template
-- [ ] Update the destinations in a template
+- [x] Create a template.
+- [x] Get the details of a specific template
+- [x] Get the details of all templates in an account
+- [x] Update the details of a template
+- [x] Create or Modify a Role in a template
+- [x] Get details of a specific Role in a template
+- [x] Delete a Role in a template
+- [x] Get settings of a template
+- [x] Update the settings of a template
+- [x] Get the list of destinations in a template
+- [x] Update the destinations in a template
 
 [Analytics](https://www.100ms.live/docs/server-side/v2/api-reference/analytics/overview)
 
