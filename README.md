@@ -1,4 +1,4 @@
-# 100ms Golang API Servicee
+# 100ms Golang API Service
 
 This is a Golang implementation of the 100ms Server v2 REST API.
 
@@ -19,6 +19,12 @@ cd 100ms-golang-api
 cp .env.example .env
 ```
 
+Install packages
+
+```
+go mod download
+```
+
 Activate the environment variables
 
 ```
@@ -32,6 +38,24 @@ go run main.go
 ```
 
 ## Running on Docker
+
+Build docker image
+
+```
+docker build --tag hms-api .
+```
+
+Run docker container from the image.
+
+We will use the `.env` file as our environment variables file when running the docker file.
+
+Remove the `export` which precedes each environment variable name so that it can be used with the docker run command.
+
+eg. `export BASE_URL` becomes `BASE_URL`
+
+```
+docker run --env-file .env -p 8080:8080 hms-api
+```
 
 # Endpoints Implemented
 
