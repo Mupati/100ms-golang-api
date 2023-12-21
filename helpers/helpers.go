@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"api/hms_errors"
 	"bytes"
 	"time"
 
@@ -13,9 +14,32 @@ import (
 	"github.com/google/uuid"
 )
 
-func GenerateManagementToken() string {
-	appAccessKey := os.Getenv("APP_ACCESS_KEY")
-	appSecret := os.Getenv("APP_SECRET")
+func GetEnvironmentVariable(key string) (string, bool) {
+	envValue, ok := os.LookupEnv(key)
+	if ok {
+		return envValue, ok
+	}
+	return "", ok
+}
+
+func GetEndpointUrl(path string) string {
+	baseUrl, ok := GetEnvironmentVariable("BASE_URL")
+	if !ok {
+		panic(hms_errors.ErrMissingBaseUrl)
+	}
+	return baseUrl + path
+}
+
+func GenerateManagementToken() (string, error) {
+	appAccessKey, ok := GetEnvironmentVariable("APP_ACCESS_KEY")
+
+	if !ok {
+		return "", hms_errors.ErrMissingAppAccessKey
+	}
+	appSecret, ok := GetEnvironmentVariable("APP_SECRET")
+	if !ok {
+		return "", hms_errors.ErrMissingAppSecretKey
+	}
 
 	mySigningKey := []byte(appSecret)
 	expiresIn := uint32(24 * 3600)
@@ -33,15 +57,17 @@ func GenerateManagementToken() string {
 
 	// Sign and get the complete encoded token as a string using the secret
 	signedToken, _ := token.SignedString(mySigningKey)
-	return signedToken
+	return signedToken, nil
 }
 
 // Helper method to make all api calls to 100ms
 func MakeApiRequest(ctx *gin.Context, url, method string, payload *bytes.Buffer) {
 
 	var requestBody io.Reader
-
-	managementToken := GenerateManagementToken()
+	managementToken, err := GenerateManagementToken()
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
 
 	client := &http.Client{}
 
@@ -73,9 +99,6 @@ func MakeApiRequest(ctx *gin.Context, url, method string, payload *bytes.Buffer)
 
 	defer res.Body.Close()
 
-	// TODO
-	// Get the actual response to send the correct status code.
-	// Currently when there's an error, we still send 200, but the error code is in the payload.
-	ctx.Data(http.StatusOK, gin.MIMEJSON, resp)
+	ctx.Data(res.StatusCode, gin.MIMEJSON, resp)
 
 }

@@ -3,13 +3,13 @@ package room
 import (
 	"bytes"
 	"encoding/json"
-	"os"
 	"strconv"
 
 	"net/http"
 	"net/url"
 
 	"api/helpers"
+	"api/hms_errors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -55,9 +55,7 @@ type HMSRoomQueryParam struct {
 	After   string `form:"after,omitempty"`
 }
 
-const missingRoomIdErrorMessage = "provide a room ID"
-
-var roomBaseUrl = os.Getenv("BASE_URL") + "rooms"
+var roomBaseUrl = helpers.GetEndpointUrl("rooms")
 
 // Get the post request body
 func getRequestBody(ctx *gin.Context) *bytes.Buffer {
@@ -87,7 +85,7 @@ func GetRoom(ctx *gin.Context) {
 
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
 	}
 
 	helpers.MakeApiRequest(ctx, roomBaseUrl+"/"+roomId, "GET", nil)
@@ -120,7 +118,7 @@ func CreateRoom(ctx *gin.Context) {
 func UpdateRoom(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
 	}
 
 	payload := getRequestBody(ctx)
@@ -131,7 +129,7 @@ func UpdateRoom(ctx *gin.Context) {
 func EnableRoom(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
 	}
 	postBody, _ := json.Marshal(map[string]bool{"enabled": true})
 	payload := bytes.NewBuffer(postBody)
@@ -142,7 +140,7 @@ func EnableRoom(ctx *gin.Context) {
 func DisableRoom(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
 	}
 	postBody, _ := json.Marshal(map[string]bool{"enabled": false})
 	payload := bytes.NewBuffer(postBody)

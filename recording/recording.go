@@ -2,19 +2,16 @@ package recording
 
 import (
 	"api/helpers"
+	"api/hms_errors"
 	"bytes"
 	"net/http"
-	"os"
 
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
 )
 
-var recordingBaseUrl = os.Getenv("BASE_URL") + "recordings"
-
-const missingRoomIdErrorMessage = "provide a room ID"
-const missingRecordingIdErrorMessage = "provide the recording ID"
+var recordingBaseUrl = helpers.GetEndpointUrl("recordings")
 
 type RecordingResolution struct {
 	Height uint32 `json:"height,omitempty"`
@@ -52,7 +49,7 @@ type HMSStartRecordingBody struct {
 func StartRecording(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
 	}
 
 	var rb HMSStartRecordingBody
@@ -75,7 +72,7 @@ func StartRecording(ctx *gin.Context) {
 func StopRecordings(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
 	}
 	helpers.MakeApiRequest(ctx, recordingBaseUrl+"/room/"+roomId+"/stop", "POST", nil)
 }
@@ -84,7 +81,7 @@ func StopRecordings(ctx *gin.Context) {
 func StopRecording(ctx *gin.Context) {
 	recordingId, ok := ctx.Params.Get("recordingId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": "provide the recording ID"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRecordingId})
 	}
 	helpers.MakeApiRequest(ctx, recordingBaseUrl+"/"+recordingId+"/stop", "POST", nil)
 }
@@ -93,7 +90,7 @@ func StopRecording(ctx *gin.Context) {
 func GetRecording(ctx *gin.Context) {
 	recordingId, ok := ctx.Params.Get("recordingId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRecordingIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRecordingId})
 	}
 	helpers.MakeApiRequest(ctx, recordingBaseUrl+"/"+recordingId, "GET", nil)
 }
@@ -107,7 +104,7 @@ func ListRecordings(ctx *gin.Context) {
 func GetRecordingConfig(ctx *gin.Context) {
 	recordingId, ok := ctx.Params.Get("recordingId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRecordingIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRecordingId})
 	}
 	helpers.MakeApiRequest(ctx, recordingBaseUrl+"/"+recordingId+"/config", "GET", nil)
 }
