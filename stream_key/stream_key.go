@@ -2,21 +2,19 @@ package stream_key
 
 import (
 	"api/helpers"
+	"api/hms_errors"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
-var streamKeysBaseUrl = os.Getenv("BASE_URL") + "stream-keys"
-
-const missingRoomIdErrorMessage = "provide a room ID"
+var streamKeysBaseUrl = helpers.GetEndpointUrl("stream-keys")
 
 // Get stream key
 func GetStreamKey(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
 	}
 	helpers.MakeApiRequest(ctx, streamKeysBaseUrl+"/"+roomId, "GET", nil)
 }
@@ -25,7 +23,7 @@ func GetStreamKey(ctx *gin.Context) {
 func CreateStreamKey(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
 	}
 	helpers.MakeApiRequest(ctx, streamKeysBaseUrl+"/"+roomId, "POST", nil)
 }
@@ -34,7 +32,7 @@ func CreateStreamKey(ctx *gin.Context) {
 func DisableStreamKey(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
 	}
 	helpers.MakeApiRequest(ctx, streamKeysBaseUrl+"/"+roomId+"/disable", "POST", nil)
 }

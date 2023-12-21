@@ -2,9 +2,9 @@ package room_codes
 
 import (
 	"api/helpers"
+	"api/hms_errors"
 	"bytes"
 	"net/http"
-	"os"
 
 	"encoding/json"
 
@@ -16,16 +16,14 @@ type HMSRoomCodeUpdateRequestBody struct {
 	Enabled bool   `json:"enabled"`
 }
 
-const missingRoomIdErrorMessage = "provide a room ID"
-
-var roomCodeBaseUrl = os.Getenv("BASE_URL") + "room-codes"
-var authBaseUrl = os.Getenv("AUTH_BASE_URL")
+var roomCodeBaseUrl = helpers.GetEndpointUrl("room-codes")
+var authBaseUrl, _ = helpers.GetEnvironmentVariable("AUTH_BASE_URL")
 
 // Get room codes
 func GetRoomCode(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
 	}
 
 	helpers.MakeApiRequest(ctx, roomCodeBaseUrl+"/room/"+roomId, "GET", nil)
@@ -36,7 +34,7 @@ func CreateRoomCode(ctx *gin.Context) {
 
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
 	}
 
 	helpers.MakeApiRequest(ctx, roomCodeBaseUrl+"/room/"+roomId, "POST", nil)
@@ -47,7 +45,7 @@ func CreateRoomCodeForRole(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	role, ok1 := ctx.Params.Get("role")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage + " and role"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomIdAndRole})
 	}
 	helpers.MakeApiRequest(ctx, roomCodeBaseUrl+"/room/"+roomId+"/role/"+role, "POST", nil)
 }
@@ -70,7 +68,7 @@ func UpdateRoomCode(ctx *gin.Context) {
 func CreateShortCodeAuthToken(ctx *gin.Context) {
 	code, ok := ctx.Params.Get("code")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": "provide the code"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingAuthCode})
 	}
 
 	postBody, _ := json.Marshal(map[string]string{

@@ -2,15 +2,15 @@ package sessions
 
 import (
 	"api/helpers"
+	"api/hms_errors"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-var sessionsBaseUrl = os.Getenv("BASE_URL") + "sessions"
+var sessionsBaseUrl = helpers.GetEndpointUrl("sessions")
 
 type HMSSessionQueryParam struct {
 	RoomId string `form:"room_id,omitempty"`
@@ -23,7 +23,7 @@ type HMSSessionQueryParam struct {
 func GetSession(ctx *gin.Context) {
 	sessionId, ok := ctx.Params.Get("sessionId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": "provide the session ID"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingSessionId})
 	}
 
 	helpers.MakeApiRequest(ctx, sessionsBaseUrl+"/"+sessionId, "GET", nil)

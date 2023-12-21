@@ -2,11 +2,11 @@ package polls
 
 import (
 	"api/helpers"
+	"api/hms_errors"
 	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -58,9 +58,7 @@ type PollQueryParam struct {
 	Question int32  `form:"question,omitempty"`
 }
 
-const MISSING_POLL_ID_ERROR_MESSAGE = "provide a poll ID"
-
-var pollBaseUrl = os.Getenv("BASE_URL") + "polls"
+var pollBaseUrl = helpers.GetEndpointUrl("polls")
 
 // Create a poll
 func CreatePoll(ctx *gin.Context) {
@@ -83,7 +81,7 @@ func CreatePoll(ctx *gin.Context) {
 func GetPoll(ctx *gin.Context) {
 	pollId, ok := ctx.Params.Get("pollId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_POLL_ID_ERROR_MESSAGE})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingPollId})
 	}
 	helpers.MakeApiRequest(ctx, pollBaseUrl+"/"+pollId, "GET", nil)
 }
@@ -92,7 +90,7 @@ func GetPoll(ctx *gin.Context) {
 func UpdatePoll(ctx *gin.Context) {
 	pollId, ok := ctx.Params.Get("pollId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_POLL_ID_ERROR_MESSAGE})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingPollId})
 	}
 
 	var rb HMSPoll
@@ -115,7 +113,7 @@ func UpdatePollQuestion(ctx *gin.Context) {
 	pollId, ok := ctx.Params.Get("pollId")
 	questionId, ok1 := ctx.Params.Get("questionId")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_POLL_ID_ERROR_MESSAGE + " and question ID"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingPollIdAndQuestionId})
 	}
 
 	var rb PollQuestion
@@ -143,7 +141,7 @@ func DeletePollQuestion(ctx *gin.Context) {
 	pollId, ok := ctx.Params.Get("pollId")
 	questionId, ok1 := ctx.Params.Get("questionId")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_POLL_ID_ERROR_MESSAGE + " and question ID"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingPollIdAndQuestionId})
 	}
 	helpers.MakeApiRequest(ctx, pollBaseUrl+"/"+pollId+"/questions/"+questionId, "DELETE", nil)
 }
@@ -154,7 +152,7 @@ func UpdatePollOption(ctx *gin.Context) {
 	questionId, ok1 := ctx.Params.Get("questionId")
 	optionId, ok2 := ctx.Params.Get("optionId")
 	if !ok || !ok1 || !ok2 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_POLL_ID_ERROR_MESSAGE + " ,question ID and option ID"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingPollIdAndQuestionIdAndOptionId})
 	}
 
 	var rb PollOption
@@ -173,7 +171,7 @@ func DeletePollOption(ctx *gin.Context) {
 	questionId, ok1 := ctx.Params.Get("questionId")
 	optionId, ok2 := ctx.Params.Get("optionId")
 	if !ok || !ok1 || !ok2 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_POLL_ID_ERROR_MESSAGE + " ,question ID and option ID"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingPollIdAndQuestionIdAndOptionId})
 	}
 	helpers.MakeApiRequest(ctx, pollBaseUrl+"/"+pollId+"/questions/"+questionId+"/options/"+optionId, "DELETE", nil)
 }
@@ -183,7 +181,7 @@ func GetPollSessions(ctx *gin.Context) {
 	pollId, ok := ctx.Params.Get("pollId")
 	sessionId, ok1 := ctx.Params.Get("sessionId")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_POLL_ID_ERROR_MESSAGE + " and session ID"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingPollIdAndSessionId})
 	}
 	var param PollQueryParam
 
@@ -203,7 +201,7 @@ func GetPollResult(ctx *gin.Context) {
 	sessionId, ok1 := ctx.Params.Get("sessionId")
 	resultId, ok2 := ctx.Params.Get("resultId")
 	if !ok || !ok1 || !ok2 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_POLL_ID_ERROR_MESSAGE + " ,session ID and results ID"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingPollIdAndSessionIdAndResultID})
 	}
 	helpers.MakeApiRequest(ctx, pollBaseUrl+"/"+pollId+"/sessions/"+sessionId+"/results/"+resultId, "GET", nil)
 }
@@ -213,7 +211,7 @@ func ListPollResults(ctx *gin.Context) {
 	pollId, ok := ctx.Params.Get("pollId")
 	sessionId, ok1 := ctx.Params.Get("sessionId")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_POLL_ID_ERROR_MESSAGE + " and session ID"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingPollIdAndSessionId})
 	}
 	var param PollQueryParam
 	qs := url.Values{}
@@ -232,7 +230,7 @@ func ListPollResponses(ctx *gin.Context) {
 	pollId, ok := ctx.Params.Get("pollId")
 	sessionId, ok1 := ctx.Params.Get("sessionId")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_POLL_ID_ERROR_MESSAGE + " and session ID"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingPollIdAndSessionId})
 	}
 
 	var param PollQueryParam
@@ -256,7 +254,7 @@ func GetPollResponse(ctx *gin.Context) {
 	sessionId, ok1 := ctx.Params.Get("sessionId")
 	responseId, ok2 := ctx.Params.Get("resultId")
 	if !ok || !ok1 || !ok2 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": MISSING_POLL_ID_ERROR_MESSAGE + " ,session ID and results ID"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingPollIdAndSessionIdAndResultID})
 	}
 	helpers.MakeApiRequest(ctx, pollBaseUrl+"/"+pollId+"/sessions/"+sessionId+"/responses/"+responseId, "GET", nil)
 }

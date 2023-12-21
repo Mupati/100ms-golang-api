@@ -2,15 +2,15 @@ package recording_assets
 
 import (
 	"api/helpers"
+	"api/hms_errors"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-var recordingAssetsBaseUrl = os.Getenv("BASE_URL") + "recording-assets"
+var recordingAssetsBaseUrl = helpers.GetEndpointUrl("recording-assets")
 
 type HMSRecordingAssetsQueryParam struct {
 	RoomId    string `form:"room_id,omitempty"`
@@ -24,7 +24,7 @@ type HMSRecordingAssetsQueryParam struct {
 func GetRecordingAsset(ctx *gin.Context) {
 	assetId, ok := ctx.Params.Get("assetId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": "provide the asset ID"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingAssetId})
 	}
 	helpers.MakeApiRequest(ctx, recordingAssetsBaseUrl+"/"+assetId, "GET", nil)
 }
@@ -52,7 +52,7 @@ func ListRecordingAssets(ctx *gin.Context) {
 func GetPresignedUrl(ctx *gin.Context) {
 	assetId, ok := ctx.Params.Get("assetId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": "provide the asset ID"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingAssetId})
 	}
 
 	presignDuration := ctx.Query("presign_duration")

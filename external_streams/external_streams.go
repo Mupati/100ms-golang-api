@@ -2,10 +2,10 @@ package external_streams
 
 import (
 	"api/helpers"
+	"api/hms_errors"
 	"bytes"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 
 	"encoding/json"
@@ -13,10 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var externalStreamsBaseUrl = os.Getenv("BASE_URL") + "external-streams"
-
-const missingRoomIdErrorMessage = "provide a room ID"
-const missingStreamIdErrorMessage = "provide the stream ID"
+var externalStreamsBaseUrl = helpers.GetEndpointUrl("external-streams")
 
 type VideoResolution struct {
 	Height uint32 `json:"height,omitempty"`
@@ -43,7 +40,7 @@ type HMSExternalStreamsQueryParam struct {
 func StartExternalStream(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
 	}
 
 	var rb HMSStartExternalStreamBody
@@ -75,7 +72,7 @@ func StartExternalStream(ctx *gin.Context) {
 func StopExternalStreams(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingRoomIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
 	}
 	helpers.MakeApiRequest(ctx, externalStreamsBaseUrl+"/room/"+roomId+"/stop", "POST", nil)
 }
@@ -84,7 +81,7 @@ func StopExternalStreams(ctx *gin.Context) {
 func StopExternalStream(ctx *gin.Context) {
 	streamId, ok := ctx.Params.Get("streamId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingStreamIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingStreamId})
 	}
 	helpers.MakeApiRequest(ctx, externalStreamsBaseUrl+"/"+streamId+"/stop", "POST", nil)
 }
@@ -93,7 +90,7 @@ func StopExternalStream(ctx *gin.Context) {
 func GetExternalStream(ctx *gin.Context) {
 	streamId, ok := ctx.Params.Get("streamId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingStreamIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingStreamId})
 	}
 	helpers.MakeApiRequest(ctx, externalStreamsBaseUrl+"/"+streamId, "GET", nil)
 }

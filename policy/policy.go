@@ -2,20 +2,18 @@ package policy
 
 import (
 	"api/helpers"
+	"api/hms_errors"
 	"api/live_streams"
 	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-var policyBaseUrl = os.Getenv("BASE_URL") + "templates"
-
-const missingTemplateIdErrorMessage = "provide the template ID"
+var policyBaseUrl = helpers.GetEndpointUrl("templates")
 
 type HMSAudio struct {
 	Bitrate uint16 `json:"bitRate,omitempty"`
@@ -235,7 +233,7 @@ func CreateTemplate(ctx *gin.Context) {
 func UpdateTemplate(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateId})
 	}
 
 	payload := getTemplateRequestBody(ctx)
@@ -260,7 +258,7 @@ func ListTemplates(ctx *gin.Context) {
 func GetTemplate(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateId})
 	}
 	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId, "GET", nil)
 }
@@ -270,7 +268,7 @@ func ModifyTemplateRole(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	roleName, ok1 := ctx.Params.Get("roleName")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage + " and the role name"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateIdAndRoleName})
 	}
 
 	var rb HMSRole
@@ -296,7 +294,7 @@ func GetTemplateRole(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	roleName, ok1 := ctx.Params.Get("roleName")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage + " and the role name"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateIdAndRoleName})
 	}
 	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/roles/"+roleName, "GET", nil)
 }
@@ -306,7 +304,7 @@ func DeleteTemplateRole(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	roleName, ok1 := ctx.Params.Get("roleName")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage + " and the role name"})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateIdAndRoleName})
 	}
 	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/roles/"+roleName, "DELETE", nil)
 }
@@ -315,7 +313,7 @@ func DeleteTemplateRole(ctx *gin.Context) {
 func GetTemplateSettings(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateId})
 	}
 	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/settings", "GET", nil)
 }
@@ -324,7 +322,7 @@ func GetTemplateSettings(ctx *gin.Context) {
 func UpdateTemplateSettings(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateId})
 	}
 
 	var rb HMSSetting
@@ -344,7 +342,7 @@ func UpdateTemplateSettings(ctx *gin.Context) {
 func GetTemplateDestinations(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateId})
 	}
 	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/destinations", "GET", nil)
 }
@@ -353,7 +351,7 @@ func GetTemplateDestinations(ctx *gin.Context) {
 func UpdateTemplateDestinations(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": missingTemplateIdErrorMessage})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateId})
 	}
 
 	var rb HMSDestination

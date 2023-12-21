@@ -1,8 +1,9 @@
 package token
 
 import (
+	"api/helpers"
+	"api/hms_errors"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -18,8 +19,15 @@ type RequestBody struct {
 }
 
 func CreateToken(ctx *gin.Context) {
-	appAccessKey := os.Getenv("APP_ACCESS_KEY")
-	appSecret := os.Getenv("APP_SECRET")
+
+	appAccessKey, ok := helpers.GetEnvironmentVariable("APP_ACCESS_KEY")
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": hms_errors.ErrMissingAppAccessKey})
+	}
+	appSecret, ok := helpers.GetEnvironmentVariable("APP_SECRET")
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": hms_errors.ErrMissingAppSecretKey})
+	}
 
 	var rb RequestBody
 	var expiresIn uint32
