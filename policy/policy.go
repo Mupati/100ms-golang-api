@@ -2,8 +2,8 @@ package policy
 
 import (
 	"api/helpers"
-	"api/hms_errors"
-	"api/live_streams"
+	"api/hmserrors"
+	"api/livestreams"
 	"bytes"
 	"encoding/json"
 	"net/http"
@@ -178,12 +178,12 @@ type HMSHlsDestinations struct {
 	AutoStopTimeout         uint                    `json:"autoStopTimeout,omitempty"`
 }
 type HMSTranscriptions struct {
-	Name             string                             `json:"name"`
-	Modes            []string                           `json:"modes,omitempty"`
-	Role             string                             `json:"role"`
-	OutputModes      []string                           `json:"outputModes,omitempty"`
-	CustomVocabulary []string                           `json:"customVocabulary,omitempty"`
-	Summary          *live_streams.TranscriptionSummary `json:"summary,omitempty"`
+	Name             string                            `json:"name"`
+	Modes            []string                          `json:"modes,omitempty"`
+	Role             string                            `json:"role"`
+	OutputModes      []string                          `json:"outputModes,omitempty"`
+	CustomVocabulary []string                          `json:"customVocabulary,omitempty"`
+	Summary          *livestreams.TranscriptionSummary `json:"summary,omitempty"`
 }
 
 type HMSDestination struct {
@@ -233,7 +233,7 @@ func CreateTemplate(ctx *gin.Context) {
 func UpdateTemplate(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingTemplateId})
 	}
 
 	payload := getTemplateRequestBody(ctx)
@@ -258,7 +258,7 @@ func ListTemplates(ctx *gin.Context) {
 func GetTemplate(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingTemplateId})
 	}
 	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId, "GET", nil)
 }
@@ -268,7 +268,7 @@ func ModifyTemplateRole(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	roleName, ok1 := ctx.Params.Get("roleName")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateIdAndRoleName})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingTemplateIdAndRoleName})
 	}
 
 	var rb HMSRole
@@ -294,7 +294,7 @@ func GetTemplateRole(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	roleName, ok1 := ctx.Params.Get("roleName")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateIdAndRoleName})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingTemplateIdAndRoleName})
 	}
 	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/roles/"+roleName, "GET", nil)
 }
@@ -304,7 +304,7 @@ func DeleteTemplateRole(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	roleName, ok1 := ctx.Params.Get("roleName")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateIdAndRoleName})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingTemplateIdAndRoleName})
 	}
 	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/roles/"+roleName, "DELETE", nil)
 }
@@ -313,7 +313,7 @@ func DeleteTemplateRole(ctx *gin.Context) {
 func GetTemplateSettings(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingTemplateId})
 	}
 	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/settings", "GET", nil)
 }
@@ -322,7 +322,7 @@ func GetTemplateSettings(ctx *gin.Context) {
 func UpdateTemplateSettings(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingTemplateId})
 	}
 
 	var rb HMSSetting
@@ -342,7 +342,7 @@ func UpdateTemplateSettings(ctx *gin.Context) {
 func GetTemplateDestinations(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingTemplateId})
 	}
 	helpers.MakeApiRequest(ctx, policyBaseUrl+"/"+templateId+"/destinations", "GET", nil)
 }
@@ -351,7 +351,7 @@ func GetTemplateDestinations(ctx *gin.Context) {
 func UpdateTemplateDestinations(ctx *gin.Context) {
 	templateId, ok := ctx.Params.Get("templateId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingTemplateId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingTemplateId})
 	}
 
 	var rb HMSDestination

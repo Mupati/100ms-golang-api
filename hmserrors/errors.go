@@ -1,4 +1,4 @@
-package hms_errors
+package hmserrors
 
 import (
 	"errors"

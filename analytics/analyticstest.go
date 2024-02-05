@@ -30,10 +30,10 @@ func TestGetAnalyticsEvents(t *testing.T) {
 	// Create a test request with query parameters
 	reqWithoutType, err := http.NewRequest("GET", ts.URL+"/analytics/events?room_id=65797aca2230de2e7bd21539", nil)
 	assert.NoError(t, err)
-	reqWithoutRoomId, err1 := http.NewRequest("GET", ts.URL+"/analytics/events?type=track.add.success", nil)
-	assert.NoError(t, err1)
-	reqWithRequiredParams, err2 := http.NewRequest("GET", ts.URL+"/analytics/events?type=track.add.success&room_id=65797aca2230de2e7bd21539", nil)
-	assert.NoError(t, err2)
+	reqWithoutRoomId, err := http.NewRequest("GET", ts.URL+"/analytics/events?type=track.add.success", nil)
+	assert.NoError(t, err)
+	reqWithRequiredParams, err := http.NewRequest("GET", ts.URL+"/analytics/events?type=track.add.success&room_id=65797aca2230de2e7bd21539", nil)
+	assert.NoError(t, err)
 
 	tests := []struct {
 		name         string

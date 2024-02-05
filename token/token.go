@@ -2,7 +2,7 @@ package token
 
 import (
 	"api/helpers"
-	"api/hms_errors"
+	"api/hmserrors"
 	"net/http"
 	"time"
 
@@ -22,11 +22,11 @@ func CreateToken(ctx *gin.Context) {
 
 	appAccessKey, ok := helpers.GetEnvironmentVariable("APP_ACCESS_KEY")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": hms_errors.ErrMissingAppAccessKey})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": hmserrors.ErrMissingAppAccessKey})
 	}
 	appSecret, ok := helpers.GetEnvironmentVariable("APP_SECRET")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": hms_errors.ErrMissingAppSecretKey})
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": hmserrors.ErrMissingAppSecretKey})
 	}
 
 	var rb RequestBody

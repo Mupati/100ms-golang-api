@@ -1,8 +1,8 @@
-package external_streams
+package externalstreams
 
 import (
 	"api/helpers"
-	"api/hms_errors"
+	"api/hmserrors"
 	"bytes"
 	"net/http"
 	"net/url"
@@ -40,7 +40,7 @@ type HMSExternalStreamsQueryParam struct {
 func StartExternalStream(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 
 	var rb HMSStartExternalStreamBody
@@ -72,7 +72,7 @@ func StartExternalStream(ctx *gin.Context) {
 func StopExternalStreams(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 	helpers.MakeApiRequest(ctx, externalStreamsBaseUrl+"/room/"+roomId+"/stop", "POST", nil)
 }
@@ -81,7 +81,7 @@ func StopExternalStreams(ctx *gin.Context) {
 func StopExternalStream(ctx *gin.Context) {
 	streamId, ok := ctx.Params.Get("streamId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingStreamId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingStreamId})
 	}
 	helpers.MakeApiRequest(ctx, externalStreamsBaseUrl+"/"+streamId+"/stop", "POST", nil)
 }
@@ -90,7 +90,7 @@ func StopExternalStream(ctx *gin.Context) {
 func GetExternalStream(ctx *gin.Context) {
 	streamId, ok := ctx.Params.Get("streamId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingStreamId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingStreamId})
 	}
 	helpers.MakeApiRequest(ctx, externalStreamsBaseUrl+"/"+streamId, "GET", nil)
 }

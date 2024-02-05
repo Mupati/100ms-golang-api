@@ -9,7 +9,7 @@ import (
 	"net/url"
 
 	"api/helpers"
-	"api/hms_errors"
+	"api/hmserrors"
 
 	"github.com/gin-gonic/gin"
 )
@@ -85,7 +85,7 @@ func GetRoom(ctx *gin.Context) {
 
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 
 	helpers.MakeApiRequest(ctx, roomBaseUrl+"/"+roomId, "GET", nil)
@@ -118,7 +118,7 @@ func CreateRoom(ctx *gin.Context) {
 func UpdateRoom(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 
 	payload := getRequestBody(ctx)
@@ -129,7 +129,7 @@ func UpdateRoom(ctx *gin.Context) {
 func EnableRoom(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 	postBody, _ := json.Marshal(map[string]bool{"enabled": true})
 	payload := bytes.NewBuffer(postBody)
@@ -140,7 +140,7 @@ func EnableRoom(ctx *gin.Context) {
 func DisableRoom(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 	postBody, _ := json.Marshal(map[string]bool{"enabled": false})
 	payload := bytes.NewBuffer(postBody)

@@ -1,8 +1,8 @@
-package live_streams
+package livestreams
 
 import (
 	"api/helpers"
-	"api/hms_errors"
+	"api/hmserrors"
 	"bytes"
 	"encoding/json"
 	"net/http"
@@ -63,7 +63,7 @@ type TimedMetaDataBody struct {
 func StartLiveStream(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 
 	var rb HMSLivestream
@@ -85,7 +85,7 @@ func StartLiveStream(ctx *gin.Context) {
 func StopLiveStreams(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 	helpers.MakeApiRequest(ctx, liveStreamsBaseUrl+"/room/"+roomId+"/stop", "POST", nil)
 }
@@ -94,7 +94,7 @@ func StopLiveStreams(ctx *gin.Context) {
 func StopLiveStream(ctx *gin.Context) {
 	streamId, ok := ctx.Params.Get("streamId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingStreamId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingStreamId})
 	}
 	helpers.MakeApiRequest(ctx, liveStreamsBaseUrl+"/"+streamId+"/stop", "POST", nil)
 }
@@ -103,7 +103,7 @@ func StopLiveStream(ctx *gin.Context) {
 func GetLiveStream(ctx *gin.Context) {
 	streamId, ok := ctx.Params.Get("streamId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingStreamId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingStreamId})
 	}
 	helpers.MakeApiRequest(ctx, liveStreamsBaseUrl+"/"+streamId, "GET", nil)
 }
@@ -128,7 +128,7 @@ func ListLiveStreams(ctx *gin.Context) {
 func SendTimedMetada(ctx *gin.Context) {
 	streamId, ok := ctx.Params.Get("streamId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingStreamId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingStreamId})
 	}
 
 	var rb TimedMetaDataBody
@@ -149,7 +149,7 @@ func SendTimedMetada(ctx *gin.Context) {
 func PauseLiveStreamRecording(ctx *gin.Context) {
 	streamId, ok := ctx.Params.Get("streamId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingStreamId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingStreamId})
 	}
 	helpers.MakeApiRequest(ctx, liveStreamsBaseUrl+"/"+streamId+"/pause-recording", "POST", nil)
 }
@@ -158,7 +158,7 @@ func PauseLiveStreamRecording(ctx *gin.Context) {
 func ResumeLiveStreamRecording(ctx *gin.Context) {
 	streamId, ok := ctx.Params.Get("streamId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingStreamId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingStreamId})
 	}
 	helpers.MakeApiRequest(ctx, liveStreamsBaseUrl+"/"+streamId+"/resume-recording", "POST", nil)
 }
