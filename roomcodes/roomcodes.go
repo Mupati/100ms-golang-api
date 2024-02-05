@@ -1,8 +1,8 @@
-package room_codes
+package roomcodes
 
 import (
 	"api/helpers"
-	"api/hms_errors"
+	"api/hmserrors"
 	"bytes"
 	"net/http"
 
@@ -23,7 +23,7 @@ var authBaseUrl, _ = helpers.GetEnvironmentVariable("AUTH_BASE_URL")
 func GetRoomCode(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 
 	helpers.MakeApiRequest(ctx, roomCodeBaseUrl+"/room/"+roomId, "GET", nil)
@@ -34,7 +34,7 @@ func CreateRoomCode(ctx *gin.Context) {
 
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 
 	helpers.MakeApiRequest(ctx, roomCodeBaseUrl+"/room/"+roomId, "POST", nil)
@@ -45,7 +45,7 @@ func CreateRoomCodeForRole(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	role, ok1 := ctx.Params.Get("role")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomIdAndRole})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomIdAndRole})
 	}
 	helpers.MakeApiRequest(ctx, roomCodeBaseUrl+"/room/"+roomId+"/role/"+role, "POST", nil)
 }
@@ -68,7 +68,7 @@ func UpdateRoomCode(ctx *gin.Context) {
 func CreateShortCodeAuthToken(ctx *gin.Context) {
 	code, ok := ctx.Params.Get("code")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingAuthCode})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingAuthCode})
 	}
 
 	postBody, _ := json.Marshal(map[string]string{

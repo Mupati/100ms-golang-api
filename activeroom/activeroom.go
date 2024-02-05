@@ -1,8 +1,8 @@
-package active_room
+package activeroom
 
 import (
 	"api/helpers"
-	"api/hms_errors"
+	"api/hmserrors"
 	"bytes"
 	"encoding/json"
 	"net/http"
@@ -46,7 +46,7 @@ var activeRoomBaseUrl = helpers.GetEndpointUrl("active-rooms")
 func GetActiveRoom(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 
 	helpers.MakeApiRequest(ctx, activeRoomBaseUrl+"/"+roomId, "GET", nil)
@@ -57,7 +57,7 @@ func GetPeer(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	peerId, ok1 := ctx.Params.Get("peerId")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomIdAndPeerId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomIdAndPeerId})
 	}
 	helpers.MakeApiRequest(ctx, activeRoomBaseUrl+"/"+roomId+"/peers/"+peerId, "GET", nil)
 }
@@ -67,7 +67,7 @@ func GetPeer(ctx *gin.Context) {
 func ListPeers(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 
 	var param HMSActiveRoomQueryParam
@@ -85,7 +85,7 @@ func UpdatePeer(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	peerId, ok1 := ctx.Params.Get("peerId")
 	if !ok || !ok1 {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomIdAndPeerId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomIdAndPeerId})
 	}
 
 	var rb HMSPeerUpdateBody
@@ -108,7 +108,7 @@ func UpdatePeer(ctx *gin.Context) {
 func SendMessage(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 
 	var rb HMSMessageBody
@@ -131,7 +131,7 @@ func SendMessage(ctx *gin.Context) {
 func RemovePeer(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 
 	var rb HMSRemovePeerBody
@@ -152,7 +152,7 @@ func RemovePeer(ctx *gin.Context) {
 func EndRoom(ctx *gin.Context) {
 	roomId, ok := ctx.Params.Get("roomId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingRoomId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingRoomId})
 	}
 
 	var rb HMSEndRoomBody

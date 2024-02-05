@@ -3,18 +3,18 @@ package main
 import (
 	"net/http"
 
-	"api/active_room"
+	"api/activeroom"
 	"api/analytics"
-	"api/external_streams"
-	"api/live_streams"
+	externalstreams "api/externalstreams"
+	"api/livestreams"
 	"api/policy"
 	"api/polls"
 	"api/recording"
-	"api/recording_assets"
+	"api/recordingassets"
 	"api/room"
-	"api/room_codes"
+	"api/roomcodes"
 	"api/sessions"
-	"api/stream_key"
+	"api/streamkey"
 	"api/token"
 
 	"github.com/gin-contrib/cors"
@@ -58,23 +58,23 @@ func main() {
 
 	roomCodesEndpoints := router.Group("/room-codes")
 	{
-		roomCodesEndpoints.GET("/:roomId", room_codes.GetRoomCode)
-		roomCodesEndpoints.POST("/code/:code", room_codes.CreateShortCodeAuthToken)
-		roomCodesEndpoints.POST("/:roomId", room_codes.CreateRoomCode)
-		roomCodesEndpoints.POST("/:roomId/role/:role", room_codes.CreateRoomCodeForRole)
-		roomCodesEndpoints.POST("/update", room_codes.UpdateRoomCode)
+		roomCodesEndpoints.GET("/:roomId", roomcodes.GetRoomCode)
+		roomCodesEndpoints.POST("/code/:code", roomcodes.CreateShortCodeAuthToken)
+		roomCodesEndpoints.POST("/:roomId", roomcodes.CreateRoomCode)
+		roomCodesEndpoints.POST("/:roomId/role/:role", roomcodes.CreateRoomCodeForRole)
+		roomCodesEndpoints.POST("/update", roomcodes.UpdateRoomCode)
 
 	}
 
 	activeRoomsEndpoints := router.Group("/active-rooms")
 	{
-		activeRoomsEndpoints.GET("/:roomId", active_room.GetActiveRoom)
-		activeRoomsEndpoints.GET("/:roomId/peers/:peerId", active_room.GetPeer)
-		activeRoomsEndpoints.GET("/:roomId/peers", active_room.ListPeers)
-		activeRoomsEndpoints.POST("/:roomId/peers/:peerId", active_room.UpdatePeer)
-		activeRoomsEndpoints.POST("/:roomId/send-message", active_room.SendMessage)
-		activeRoomsEndpoints.POST("/:roomId/remove-peers", active_room.RemovePeer)
-		activeRoomsEndpoints.POST("/:roomId/end-room", active_room.EndRoom)
+		activeRoomsEndpoints.GET("/:roomId", activeroom.GetActiveRoom)
+		activeRoomsEndpoints.GET("/:roomId/peers/:peerId", activeroom.GetPeer)
+		activeRoomsEndpoints.GET("/:roomId/peers", activeroom.ListPeers)
+		activeRoomsEndpoints.POST("/:roomId/peers/:peerId", activeroom.UpdatePeer)
+		activeRoomsEndpoints.POST("/:roomId/send-message", activeroom.SendMessage)
+		activeRoomsEndpoints.POST("/:roomId/remove-peers", activeroom.RemovePeer)
+		activeRoomsEndpoints.POST("/:roomId/end-room", activeroom.EndRoom)
 	}
 
 	recordingsEndpoints := router.Group("/recordings")
@@ -95,18 +95,18 @@ func main() {
 
 	recordingAssetsEndpoints := router.Group("/recording-assets")
 	{
-		recordingAssetsEndpoints.GET("", recording_assets.ListRecordingAssets)
-		recordingAssetsEndpoints.GET("/:assetId", recording_assets.GetRecordingAsset)
-		recordingAssetsEndpoints.GET("/:assetId/url", recording_assets.GetPresignedUrl)
+		recordingAssetsEndpoints.GET("", recordingassets.ListRecordingAssets)
+		recordingAssetsEndpoints.GET("/:assetId", recordingassets.GetRecordingAsset)
+		recordingAssetsEndpoints.GET("/:assetId/url", recordingassets.GetPresignedUrl)
 	}
 
 	externalStreamsEndpoints := router.Group("/external-streams")
 	{
-		externalStreamsEndpoints.POST("/room/:roomId/start", external_streams.StartExternalStream)
-		externalStreamsEndpoints.POST("/room/:roomId/stop", external_streams.StopExternalStreams)
-		externalStreamsEndpoints.POST("/:streamId/stop", external_streams.StopExternalStream)
-		externalStreamsEndpoints.GET("", external_streams.ListExternalStreams)
-		externalStreamsEndpoints.GET("/:streamId", external_streams.GetExternalStream)
+		externalStreamsEndpoints.POST("/room/:roomId/start", externalstreams.StartExternalStream)
+		externalStreamsEndpoints.POST("/room/:roomId/stop", externalstreams.StopExternalStreams)
+		externalStreamsEndpoints.POST("/:streamId/stop", externalstreams.StopExternalStream)
+		externalStreamsEndpoints.GET("", externalstreams.ListExternalStreams)
+		externalStreamsEndpoints.GET("/:streamId", externalstreams.GetExternalStream)
 	}
 
 	pollsEndpoints := router.Group("/polls")
@@ -128,14 +128,14 @@ func main() {
 
 	liveStreamsEndpoints := router.Group("/live-streams")
 	{
-		liveStreamsEndpoints.POST("/room/:roomId/start", live_streams.StartLiveStream)
-		liveStreamsEndpoints.POST("/room/:roomId/stop", live_streams.StopLiveStreams)
-		liveStreamsEndpoints.POST("/:streamId/stop", live_streams.StopLiveStream)
-		liveStreamsEndpoints.POST("/:streamId/metadata", live_streams.SendTimedMetada)
-		liveStreamsEndpoints.POST("/:streamId/pause-recording", live_streams.PauseLiveStreamRecording)
-		liveStreamsEndpoints.POST("/:streamId/resume-recording", live_streams.ResumeLiveStreamRecording)
-		liveStreamsEndpoints.GET("", live_streams.ListLiveStreams)
-		liveStreamsEndpoints.GET("/:streamId", live_streams.GetLiveStream)
+		liveStreamsEndpoints.POST("/room/:roomId/start", livestreams.StartLiveStream)
+		liveStreamsEndpoints.POST("/room/:roomId/stop", livestreams.StopLiveStreams)
+		liveStreamsEndpoints.POST("/:streamId/stop", livestreams.StopLiveStream)
+		liveStreamsEndpoints.POST("/:streamId/metadata", livestreams.SendTimedMetada)
+		liveStreamsEndpoints.POST("/:streamId/pause-recording", livestreams.PauseLiveStreamRecording)
+		liveStreamsEndpoints.POST("/:streamId/resume-recording", livestreams.ResumeLiveStreamRecording)
+		liveStreamsEndpoints.GET("", livestreams.ListLiveStreams)
+		liveStreamsEndpoints.GET("/:streamId", livestreams.GetLiveStream)
 	}
 
 	policyEndpoints := router.Group("/templates")
@@ -158,9 +158,9 @@ func main() {
 
 	streamKeyEndpoints := router.Group("/stream-keys")
 	{
-		streamKeyEndpoints.GET("/:roomId", stream_key.GetStreamKey)
-		streamKeyEndpoints.POST("/:roomId", stream_key.CreateStreamKey)
-		streamKeyEndpoints.POST("/:roomId/disable", stream_key.DisableStreamKey)
+		streamKeyEndpoints.GET("/:roomId", streamkey.GetStreamKey)
+		streamKeyEndpoints.POST("/:roomId", streamkey.CreateStreamKey)
+		streamKeyEndpoints.POST("/:roomId/disable", streamkey.DisableStreamKey)
 	}
 
 	// Analytics Events

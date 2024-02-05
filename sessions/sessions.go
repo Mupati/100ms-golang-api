@@ -2,7 +2,7 @@ package sessions
 
 import (
 	"api/helpers"
-	"api/hms_errors"
+	"api/hmserrors"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -23,7 +23,7 @@ type HMSSessionQueryParam struct {
 func GetSession(ctx *gin.Context) {
 	sessionId, ok := ctx.Params.Get("sessionId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingSessionId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingSessionId})
 	}
 
 	helpers.MakeApiRequest(ctx, sessionsBaseUrl+"/"+sessionId, "GET", nil)

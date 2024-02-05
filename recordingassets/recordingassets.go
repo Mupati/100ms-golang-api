@@ -1,8 +1,8 @@
-package recording_assets
+package recordingassets
 
 import (
 	"api/helpers"
-	"api/hms_errors"
+	"api/hmserrors"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -24,7 +24,7 @@ type HMSRecordingAssetsQueryParam struct {
 func GetRecordingAsset(ctx *gin.Context) {
 	assetId, ok := ctx.Params.Get("assetId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingAssetId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingAssetId})
 	}
 	helpers.MakeApiRequest(ctx, recordingAssetsBaseUrl+"/"+assetId, "GET", nil)
 }
@@ -52,7 +52,7 @@ func ListRecordingAssets(ctx *gin.Context) {
 func GetPresignedUrl(ctx *gin.Context) {
 	assetId, ok := ctx.Params.Get("assetId")
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hms_errors.ErrMissingAssetId})
+		ctx.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": hmserrors.ErrMissingAssetId})
 	}
 
 	presignDuration := ctx.Query("presign_duration")

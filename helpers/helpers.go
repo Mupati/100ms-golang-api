@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"api/hms_errors"
+	"api/hmserrors"
 	"bytes"
 	"time"
 
@@ -25,7 +25,7 @@ func GetEnvironmentVariable(key string) (string, bool) {
 func GetEndpointUrl(path string) string {
 	baseUrl, ok := GetEnvironmentVariable("BASE_URL")
 	if !ok {
-		panic(hms_errors.ErrMissingBaseUrl)
+		panic(hmserrors.ErrMissingBaseUrl)
 	}
 	return baseUrl + path
 }
@@ -34,11 +34,11 @@ func GenerateManagementToken() (string, error) {
 	appAccessKey, ok := GetEnvironmentVariable("APP_ACCESS_KEY")
 
 	if !ok {
-		return "", hms_errors.ErrMissingAppAccessKey
+		return "", hmserrors.ErrMissingAppAccessKey
 	}
 	appSecret, ok := GetEnvironmentVariable("APP_SECRET")
 	if !ok {
-		return "", hms_errors.ErrMissingAppSecretKey
+		return "", hmserrors.ErrMissingAppSecretKey
 	}
 
 	mySigningKey := []byte(appSecret)
